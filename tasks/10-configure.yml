@@ -1,0 +1,110 @@
+---
+- name: Ensure configuration directories exist.
+  file:
+    path: "{{ item }}"
+    state: directory
+    follow: true
+  with_flattened:
+    - "{{ php_conf_paths }}"
+    - "{{ php_extension_conf_paths }}"
+
+- name: Ensure log directory exist.
+  file:
+    path: "{{ php_fpm_log_directory }}"
+    state: directory
+
+- name: Place PHP configuration file in place.
+  template:
+    src: php.ini.j2
+    dest: "{{ item }}/php.ini"
+    owner: root
+    group: root
+    mode: 0644
+  with_items: "{{ php_conf_paths }}"
+  notify: restart webserver
+  when: php_use_managed_ini | bool
+
+
+- name: Define php_fpm_daemon.
+  set_fact:
+    php_fpm_daemon: "{{ __php_fpm_daemon }}"
+  when: php_fpm_daemon is not defined
+
+- name: Define php_fpm_pool_conf_path.
+  set_fact:
+    php_fpm_pool_conf_path: "{{ __php_fpm_pool_conf_path }}"
+  when: php_fpm_pool_conf_path is not defined
+
+- name: Define php_fpm_pool_user.
+  set_fact:
+    php_fpm_pool_user: "{{ __php_fpm_pool_user }}"
+  when: php_fpm_pool_user is not defined
+
+- name: Define php_fpm_pool_group.
+  set_fact:
+    php_fpm_pool_group: "{{ __php_fpm_pool_group }}"
+  when: php_fpm_pool_group is not defined
+
+- name: Stat php_fpm_pool_conf_path
+  stat:
+    path: "{{ php_fpm_pool_conf_path | dirname }}"
+  register: php_fpm_pool_conf_path_dir_stat
+
+- name: Ensure the default pool directory exists.
+  file:
+    path: "{{ php_fpm_pool_conf_path | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: php_fpm_pool_conf_path_dir_stat.stat.islnk is not defined
+
+- name: Configure php-fpm
+  template:
+    src: php-fpm.conf.j2
+    dest: /etc/php/php-fpm.conf
+    owner: root
+    group: root
+    force: yes
+    mode: 0644
+  notify: restart php-fpm
+
+#- name: ensure the modules directory exists.
+#  file:
+#    path: "{{ php_modules_conf_paths }}"
+#    state: directory
+#    owner: root
+#    group: root
+#    mode: 0755
+#  when: php_modules_conf_paths is defined
+
+- block:
+
+  - name: configure modules
+    template:
+      src: php_module.ini.j2
+      dest: "{{php_modules_conf_paths}}/{{ item.name }}.ini"
+    with_items:
+      '{{ php_modules }}'
+
+  - name: enable modules
+    file:
+      src: "{{php_modules_conf_paths}}/{{ item.0.name }}.ini"
+      dest: "{{ item.1 }}/conf.d/{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
+      state: link
+    when: item.0.enabled | bool | default(false) == true
+    with_nested:
+      - '{{ php_modules }}'
+      - "{{ php_conf_paths }}"
+    notify: restart php-fpm
+
+  - name: disable modules
+    file:
+      path: "{{ item.1 }}/conf.d/{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
+      state: absent
+    when: item.0.enabled | bool | default(false) == false
+    with_nested:
+      - '{{ php_modules }}'
+      - "{{ php_conf_paths }}"
+    notify: restart php-fpm
+  when: php_modules_conf_paths is defined

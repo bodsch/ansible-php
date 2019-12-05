@@ -1,0 +1,18 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: Bodo Schulz
+  description: ansible role for PHP
+  company: ""
+  license: "license (BSD, MIT)"
+  min_ansible_version: 2.4
+  platforms:
+  - name: Debian
+    versions:
+    - all
+  - name: Ubuntu
+    versions:
+    - trusty
+    - xenial
+    - bionic

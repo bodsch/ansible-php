@@ -1,0 +1,17 @@
+---
+- hosts: all
+  any_errors_fatal: false
+  environment:
+    NETRC: ''
+  roles:
+    - role: nginx
+    - role: ansible-php
+#      vars:
+#        php_fpm_pools:
+#          - name: worker-01
+#            user: www-data
+#            group: www-data
+#            listen.owner: www-data
+#            listen.group: www-data
+#            listen: "/run/php/$pool.sock"
+#

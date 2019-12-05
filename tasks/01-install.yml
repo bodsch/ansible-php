@@ -1,0 +1,45 @@
+---
+# Setup/install tasks.
+#- include: ../tasks/02-install-{{ ansible_os_family | lower }}.yml
+
+- name: Ensure PHP packages for archlinux are installed.
+  package:
+    name: "{{ item }}"
+    state: "{{ php_packages_state }}"
+  with_items: "{{ php_packages }}"
+  notify: restart webserver
+  when: ansible_os_family | lower == 'archlinux'
+
+
+- block:
+  - name: Ensure PHP packages for debian are installed.
+    apt:
+      name: "{{ php_packages }}"
+      state: "{{ php_packages_state }}"
+      install_recommends: "{{ php_install_recommends }}"
+    register: php_package_install
+    notify: restart webserver
+  when: ansible_os_family | lower == 'debian'
+
+
+- block:
+  - name: Ensure PHP packages for redhat are installed.
+    package:
+      name: "{{ item }}"
+      state: "{{ php_packages_state }}"
+      enablerepo: "{{ php_enablerepo }}"
+    with_items: "{{ php_packages }}"
+    notify: restart webserver
+  when: ansible_os_family | lower == 'redhat'
+
+
+- name: detect installed php version
+  shell: "php -v 2> /dev/null | grep built | awk -F 'PHP ' '{printf $2}' | cut -d . -f 1-2"
+  register: __installed_php_version
+
+- name: define php version.
+  set_fact:
+    __php_version: "{{ __installed_php_version.stdout }}"
+  when: __installed_php_version is defined and __installed_php_version.rc is defined and __installed_php_version.rc == 0
+
+- include_tasks: variables.yml

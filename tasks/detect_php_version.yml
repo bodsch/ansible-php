@@ -1,0 +1,39 @@
+---
+
+- block:
+    # bionic provides PHP 7.2
+    # buster provides PHP 7.3
+    # stretch provides PHP 7.0
+    - name: update the local repositories
+      apt:
+        update_cache: yes
+
+    - name: detect available php version
+      shell: |
+        apt-cache show php | grep Version | awk -F'[:+]' '{print $3}' | tr -d '[:space:]'
+      register: _detected_php_version
+
+    - name: define PHP Version
+      set_fact:
+        php_version: "{{ _detected_php_version.stdout }}"
+
+  when: ansible_os_family | lower == "debian"
+
+- block:
+    # centos7 provides PHP 5.4(.16) m(
+    - name: detect available php version
+      shell: |
+        yum info php | grep Version | cut -d ':' -f 2 | tr -d '[:space:]' | cut -c1-3
+      register: _detected_php_version
+
+    - name: define PHP Version
+      set_fact:
+        php_version: "{{ _detected_php_version.stdout }}"
+
+  when: ansible_os_family | lower == "redhat"
+
+- debug:
+    var: "{{item}}"
+  when: item is defined
+  loop:
+    - php_version
