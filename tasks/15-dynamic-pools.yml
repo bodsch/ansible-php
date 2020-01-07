@@ -1,17 +1,11 @@
 ---
 
-- debug:
-    var: "{{item}}"
-  when: item is defined
-  loop:
-    - php_fpm_default_pool
-    - php_fpm_pool_conf_path
-
 - name: delete the default pool configuration file
   file:
     path: "{{ php_fpm_pool_conf_path }}/{{ php_fpm_default_pool.name }}"
     state: absent
-  when: php_fpm_default_pool.delete
+  when:
+    - php_fpm_default_pool.delete
 #  tags: [configuration,php,fpm]
 
 - name: create pool configuration
@@ -20,8 +14,9 @@
     dest: "{{ php_fpm_pool_conf_path }}/{{ item.name }}.conf"
     backup: yes
   with_items: "{{ php_fpm_pools }}"
-  when: php_fpm_pools | length > 0
-#  notify:
-#   - restart php-fpm
+  when:
+    - php_fpm_pools | length > 0
+  notify:
+    - restart php-fpm
 #  tags: [configuration,php,fpm]
 
