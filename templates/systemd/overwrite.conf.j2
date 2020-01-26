@@ -1,0 +1,5 @@
+[Service]
+
+ExecStartPre=/bin/mkdir -p {{ php_fpm_socket_directory }}
+ExecStartPre=/bin/chown -R {{ php_fpm_pool_user }}:{{ php_fpm_pool_group }} {{ php_fpm_socket_directory }}
+ExecStartPre=/bin/chmod 0775 {{ php_fpm_socket_directory }}

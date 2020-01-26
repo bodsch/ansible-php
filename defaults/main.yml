@@ -3,6 +3,9 @@
 # for RHEL/CentOS.
 php_enablerepo: ""
 
+# use version without dot:
+php_redhat_version: "73"
+
 # PHP package state; use 'present' to make sure it's installed, or 'latest' if
 # you want to upgrade or switch versions using a new repo.
 php_packages_state: present
@@ -14,6 +17,9 @@ php_install_recommends: true
 php_enable_webserver: true
 
 php_fpm_log_directory: /var/log/php-fpm
+php_fpm_tmp_upload_diectory: /tmp/php-fpm
+php_fpm_socket_directory: /run/php
+
 
 # Possible Values: alert, error, warning, notice, debug
 php_fpm_log_level: notice
@@ -30,7 +36,6 @@ php_fpm_pm_max_spare_servers: 5
 
 # The executable to run when calling PHP from the command line.
 php_executable: "php"
-
 
 # If this is set to false, none of the following options will have any effect.
 # Any and all changes to /etc/php.ini will be your responsibility.
@@ -74,18 +79,24 @@ php_fpm_default_pool:
 
 php_fpm_pools:
   - name: worker-01
-    user: www-data
-    group: www-data
-    listen.owner: www-data
-    listen.group: www-data
-    listen: "/run/php/$pool.sock"
+    user: "{{ php_fpm_pool_user }}"
+    group: "{{ php_fpm_pool_group }}"
+    listen.owner: "{{ php_fpm_pool_user }}"
+    listen.group: "{{ php_fpm_pool_group }}"
+    listen: "{{ php_fpm_socket_directory }}/$pool.sock"
+    pm: ondemand
+    pm.max_children: 10
+    pm.start_servers: 4
+    pm.min_spare_servers: 2
+    pm.max_spare_servers: 6
+    pm.status_path: /status
 
   - name: worker-02
-    user: www-data
-    group: www-data
-    listen.owner: www-data
-    listen.group: www-data
-    listen: "/run/php/$pool.sock"
+    user: "{{ php_fpm_pool_user }}"
+    group: "{{ php_fpm_pool_group }}"
+    listen.owner: "{{ php_fpm_pool_user }}"
+    listen.group: "{{ php_fpm_pool_group }}"
+    listen: "{{ php_fpm_socket_directory }}/$pool.sock"
     pm: dynamic
     pm.max_children: 10
     pm.start_servers: 4
@@ -94,12 +105,12 @@ php_fpm_pools:
     pm.status_path: /status
     ping.path: /ping
     ping.response: pong
-    access.log: /var/log/php-fpm/$pool_access.log
+    access.log: "{{ php_fpm_log_directory }}/$pool_access.log"
     access.format: "%R - %n - %{HTTP_HOST}e - %u %t \"%m %r [%Q%q]\" %s %f %{mili}d %{kilo}M %C%%"
     chdir: /
     env:
       PATH: "/usr/local/bin:/usr/bin:/bin"
-      TMPDIR: "/tmp"
+      TMPDIR: "{{ php_fpm_tmp_upload_diectory }}"
     php_admin_value:
       # sendmail_path: "/usr/sbin/sendmail -t -i -f www@my.domain.com"
       # error_log: "/var/log/fpm-bar.www.log"
@@ -110,26 +121,31 @@ php_fpm_pools:
       # session.save_handler: memcached
       # session.save_path: "127.0.0.1:11211"
       upload_max_filesize: 32M
-      upload_tmp_dir: /var/tmp/fpm/worker-01
+      # upload_tmp_dir: "{{ php_fpm_tmp_upload_diectory }}/worker-02"
 
 # php modules
 php_modules:
-  # OpCache settings
-  - name: opcache
+  - name: gd
     enabled: true
-    priority: 10
+    priority: 20
     content: |
-      zend_extension=opcache.so
-      opcache.enable=1
-      opcache.enable_cli=1
-      opcache.memory_consumption=128
-      opcache.interned_strings_buffer=16
-      opcache.max_accelerated_files=10000
-      opcache.max_wasted_percentage=5
-      opcache.validate_timestamps=1
-      opcache.revalidate_path=0
-      opcache.revalidate_freq=1
-      opcache.max_file_size=0
+      extension=gd.so
+#  # OpCache settings
+#  - name: opcache
+#    enabled: true
+#    priority: 10
+#    content: |
+#      zend_extension=opcache.so
+#      opcache.enable=1
+#      opcache.enable_cli=1
+#      opcache.memory_consumption=128
+#      opcache.interned_strings_buffer=16
+#      opcache.max_accelerated_files=10000
+#      opcache.max_wasted_percentage=5
+#      opcache.validate_timestamps=1
+#      opcache.revalidate_path=0
+#      opcache.revalidate_freq=1
+#      opcache.max_file_size=0
 #  - name: pdo_mysql
 #    enabled: true
 #    priority: 20

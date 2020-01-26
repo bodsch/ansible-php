@@ -8,34 +8,46 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 @pytest.fixture()
-def AnsibleDefaults():
-    with open("../../defaults/main.yml", 'r') as stream:
-        return yaml.load(stream)
+def get_vars(host):
+    defaults_files = "file=../../defaults/main.yml name=role_defaults"
+    vars_files = "file=../../vars/main.yml name=role_vars"
 
+    ansible_vars = host.ansible(
+        "include_vars",
+        defaults_files)["ansible_facts"]["role_defaults"]
 
-@pytest.mark.parametrize("dirs", [
-    "/etc/php"
-])
+    ansible_vars.update(host.ansible(
+        "include_vars",
+        vars_files)["ansible_facts"]["role_vars"])
 
-def test_directories(host, dirs):
-    d = host.file(dirs)
-    assert d.is_directory
-    assert d.exists
+    print(ansible_vars)
+
+    return ansible_vars
+
+# def test_tmp_directory(host, get_vars):
+#     dir = host.file(get_vars['php_fpm_conf_path'])
+#     assert dir.exists
+#     assert dir.is_directory
+#
+#
+# def test_tmp_directory(host, get_vars):
+#     dir = host.file(get_vars['php_fpm_pool_conf_path'])
+#     assert dir.exists
+#     assert dir.is_directory
+#
+#
+# def test_tmp_directory(host, get_vars):
+#     dir = host.file(get_vars['php_modules_conf_paths'])
+#     assert dir.exists
+#     assert dir.is_directory
 
 
 # @pytest.mark.parametrize("files", [
-#     "/opt/jolokia/jolokia-agent.jar"
+#     "php-fpm.conf",
 # ])
-# def test_files(host, files):
-#     f = host.file(files)
+# def test_files(host, get_vars, files):
+#     dir = host.file(get_vars['php_fpm_conf_path'])
+#     f = host.file("%s/%s" % (dir.linked_to, files))
 #     assert f.exists
 #     assert f.is_file
-
-
-# def test_user(host):
-#     assert host.group("jolokia").exists
-#     assert host.user("jolokia").exists
-#     assert "jolokia" in host.user("jolokia").groups
-#     assert host.user("jolokia").shell == "/sbin/nologin"
-#     assert host.user("jolokia").home == "/opt/jolokia"
 #

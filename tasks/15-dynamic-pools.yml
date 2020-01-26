@@ -6,17 +6,14 @@
     state: absent
   when:
     - php_fpm_default_pool.delete
-#  tags: [configuration,php,fpm]
 
 - name: create pool configuration
   template:
     src: pool.conf.j2
     dest: "{{ php_fpm_pool_conf_path }}/{{ item.name }}.conf"
-    backup: yes
+    backup: true
   with_items: "{{ php_fpm_pools }}"
   when:
     - php_fpm_pools | length > 0
   notify:
     - restart php-fpm
-#  tags: [configuration,php,fpm]
-
