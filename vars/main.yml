@@ -1,0 +1,193 @@
+---
+
+_php_packages:
+  default:
+    - php-common
+    - php-cli
+    - php-fpm
+    - php-gd
+    - php-curl
+    - php-imap
+    - php-json
+    - php-opcache
+    - php-intl
+    - php-xml
+    - php-mysql
+    - php-mbstring
+    - php-memcached
+    - php-db
+  debian-10:
+    - php-common
+    - php-cli
+    - php-fpm
+    - php-gd
+    - php-curl
+    - php-imap
+    - php-json
+    - php-opcache
+    - php-intl
+    - php-xml
+    - php-mysql
+    - php-mbstring
+    - php-memcached
+    - php-db-dataobject
+  debian:
+    - php-common
+    - php-cli
+    - php-fpm
+    - php-gd
+    - php-curl
+    - php-imap
+    - php-json
+    - php-opcache
+    - php-intl
+    - php-xml
+    - php-mysql
+    - php-mbstring
+    - php-memcached
+    - php-db
+  centos:
+    - php73
+    - php73-php-cli
+    - php73-php-common
+    - php73-php-devel
+    - php73-php-fpm
+    - php73-php-gd
+    - php73-php-ldap
+    - php73-php-mbstring
+    - php73-php-pdo
+    - php73-php-pear
+    - php73-php-pecl-memcache
+    - php73-php-xml
+    - php73-php-xmlrpc
+  archlinux:
+    - php
+    - php-cgi
+    - php-fpm
+    - php-gd
+    - php-imap
+    - php-intl
+    - php-memcached
+    - php-apcu
+
+_php_conf_paths:
+  default:
+    - '/etc/php/{{ php_version }}/fpm'
+    - '/etc/php/{{ php_version }}/cli'
+  debian:
+    - '/etc/php/{{ php_version }}/fpm'
+    - '/etc/php/{{ php_version }}/cli'
+  centos:
+    - /etc
+  archlinux:
+    - /etc
+
+_php_extension_conf_paths:
+  default:
+    - '/etc/php/{{ php_version }}/fpm/conf.d'
+    - '/etc/php/{{ php_version }}/cli/conf.d'
+    - '/etc/php/{{ php_version }}/mods-available'
+  debain:
+    - '/etc/php/{{ php_version }}/fpm/conf.d'
+    - '/etc/php/{{ php_version }}/cli/conf.d'
+    - '/etc/php/{{ php_version }}/mods-available'
+  centos:
+    - /etc/php.d
+  archlinux:
+    - /etc/php/conf.d
+
+_php_fpm_daemon:
+  default: 'php{{ php_version }}-fpm'
+  debian: 'php{{ php_version }}-fpm'
+  centos: php-fpm
+  archlinux: php-fpm
+
+_php_fpm_pool_user:
+  default: nobody
+  debian: www-data
+  centos: nobody
+  archlinux: http
+
+_php_fpm_pool_group:
+  default: nogroup
+  debian: www-data
+  centos: nobody
+  archlinux: http
+
+_php_fpm_conf_path:
+  default: "/etc/php/{{ php_version }}/fpm"
+  debian: "/etc/php/{{ php_version }}/fpm"
+  centos: /etc
+  archlinux: /etc/php/php-fpm.d
+
+_php_fpm_pool_conf_path:
+  default: "/etc/php/{{ php_version }}/fpm/pool.d"
+  debian: "/etc/php/{{ php_version }}/fpm/pool.d"
+  centos: /etc/php-fpm.d
+  archlinux: /etc/php/php-fpm.d
+
+_php_webserver_daemon:
+  default: nginx
+  debian: nginx
+  centos: nginx
+
+_php_modules_conf_paths:
+  default: "/etc/php/{{ php_version }}/mods-available"
+  debian: "/etc/php/{{ php_version }}/mods-available"
+  centos: /etc/php.d
+
+
+php_packages: "{{ _php_packages[ansible_distribution | lower~ '-' ~ ansible_distribution_major_version] |
+  default(_php_packages[ansible_distribution | lower] |
+  default(_php_packages['default'])) }}"
+
+php_conf_paths: "{{ _php_conf_paths[ansible_distribution | lower~ '-' ~ ansible_distribution_major_version] |
+  default(_php_conf_paths[ansible_distribution | lower] |
+  default(_php_conf_paths['default'])) }}"
+
+php_extension_conf_paths: "{{ _php_extension_conf_paths[ansible_distribution | lower~ '-' ~ ansible_distribution_major_version] |
+  default(_php_extension_conf_paths[ansible_distribution | lower] |
+  default(_php_extension_conf_paths['default'])) }}"
+
+php_fpm_daemon: "{{ _php_fpm_daemon[ansible_os_family | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_daemon[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_daemon[ansible_distribution | lower] |
+  default(_php_fpm_daemon[ansible_os_family | lower] |
+  default(_php_fpm_daemon['default'])))) }}"
+
+php_fpm_pool_user: "{{ _php_fpm_pool_user[ansible_os_family | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_pool_user[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_pool_user[ansible_distribution | lower] |
+  default(_php_fpm_pool_user[ansible_os_family | lower] |
+  default(_php_fpm_pool_user['default'])))) }}"
+
+php_fpm_pool_group: "{{ _php_fpm_pool_group[ansible_os_family | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_pool_group[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_pool_group[ansible_distribution | lower] |
+  default(_php_fpm_pool_group[ansible_os_family] |
+  default(_php_fpm_pool_group['default'])))) }}"
+
+php_fpm_conf_path: "{{ _php_fpm_conf_path[ansible_os_family | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_conf_path[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_conf_path[ansible_distribution | lower] |
+  default(_php_fpm_conf_path[ansible_os_family | lower] |
+  default(_php_fpm_conf_path['default'])))) }}"
+
+php_fpm_pool_conf_path: "{{ _php_fpm_pool_conf_path[ansible_os_family | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_pool_conf_path[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_pool_conf_path[ansible_distribution | lower] |
+  default(_php_fpm_pool_conf_path[ansible_os_family | lower] |
+  default(_php_fpm_pool_conf_path['default'])))) }}"
+
+php_webserver_daemon: "{{ _php_webserver_daemon[ansible_os_family | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_webserver_daemon[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_webserver_daemon[ansible_distribution | lower] |
+  default(_php_webserver_daemon[ansible_os_family | lower] |
+  default(_php_webserver_daemon['default'])))) }}"
+
+
+php_modules_conf_paths: "{{ _php_modules_conf_paths[ansible_os_family | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_modules_conf_paths[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_modules_conf_paths[ansible_distribution | lower] |
+  default(_php_modules_conf_paths[ansible_os_family | lower] |
+  default(_php_modules_conf_paths['default'])))) }}"

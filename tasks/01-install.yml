@@ -1,45 +1,48 @@
 ---
-# Setup/install tasks.
-#- include: ../tasks/02-install-{{ ansible_os_family | lower }}.yml
 
-- name: Ensure PHP packages for archlinux are installed.
+- name: ensure PHP packages are installed.
   package:
     name: "{{ item }}"
     state: "{{ php_packages_state }}"
-  with_items: "{{ php_packages }}"
-  notify: restart webserver
-  when: ansible_os_family | lower == 'archlinux'
-
+  loop:
+    "{{ php_packages }}"
 
 - block:
-  - name: Ensure PHP packages for debian are installed.
-    apt:
-      name: "{{ php_packages }}"
-      state: "{{ php_packages_state }}"
-      install_recommends: "{{ php_install_recommends }}"
-    register: php_package_install
-    notify: restart webserver
-  when: ansible_os_family | lower == 'debian'
+    - name: create links for PHP packages
+      file:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        state: link
+      loop:
+        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/php", dest: /usr/bin/php }
+        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/php-cgi", dest: /usr/bin/php-cgi }
+        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/pecl", dest: /usr/bin/pecl }
+        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/pear", dest: /usr/bin/pear }
+        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/phar", dest: /usr/bin/phar }
+        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/sbin/php-fpm", dest: /usr/sbin/php-fpm }
+        - { src: "/etc/opt/remi/php{{ php_package_version }}/php.d", dest: /etc/php.d }
+        - { src: "/etc/opt/remi/php{{ php_package_version }}/php-fpm.d", dest: /etc/php-fpm.d }
+        - { src: "/usr/lib/systemd/system/php{{ php_package_version }}-php-fpm.service", dest: /usr/lib/systemd/system/php-fpm.service }
 
+    - name: create overwrite.conf for systemd
+      template:
+        src: systemd/overwrite.conf.j2
+        dest: "/etc/systemd/system/php{{ php_package_version }}-php-fpm.service.d/override.conf"
+      notify:
+        - systemctl daemon-reload
+        - restart php-fpm
 
-- block:
-  - name: Ensure PHP packages for redhat are installed.
-    package:
-      name: "{{ item }}"
-      state: "{{ php_packages_state }}"
-      enablerepo: "{{ php_enablerepo }}"
-    with_items: "{{ php_packages }}"
-    notify: restart webserver
   when: ansible_os_family | lower == 'redhat'
 
 
 - name: detect installed php version
-  shell: "php -v 2> /dev/null | grep built | awk -F 'PHP ' '{printf $2}' | cut -d . -f 1-2"
+  shell: "php -v 2> /dev/null | grep NTS | awk -F 'PHP ' '{printf $2}' | cut -d . -f 1-2"
   register: __installed_php_version
 
 - name: define php version.
   set_fact:
-    __php_version: "{{ __installed_php_version.stdout }}"
+    php_version: "{{ __installed_php_version.stdout }}"
   when: __installed_php_version is defined and __installed_php_version.rc is defined and __installed_php_version.rc == 0
 
-- include_tasks: variables.yml
+- name: re-read OS-specific variables.
+  include_vars: main.yml

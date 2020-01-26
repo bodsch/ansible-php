@@ -1,14 +1,11 @@
 ---
-- name: restart webserver
-  service:
-    name: "{{ php_webserver_daemon }}"
-    state: restarted
-  notify: restart php-fpm
-  when: php_enable_webserver
+
+- name: systemctl daemon-reload
+  systemd:
+    daemon_reload: true
 
 - name: restart php-fpm
   service:
-    name: "{{ __php_fpm_daemon }}"
+    name: "{{ php_fpm_daemon }}"
     state: restarted
   when: php_enable_php_fpm
-

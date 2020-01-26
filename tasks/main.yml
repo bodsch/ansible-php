@@ -1,24 +1,16 @@
 ---
 
+- include: preparations.yml
+  become: true
+  tags:
+    - preparations
+
 - name: detect available php version
   include_tasks: detect_php_version.yml
 
-- name: Include OS-specific variables.
-  include_vars:
-    file: "{{ item }}"
-  with_first_found:
-    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
-    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_release | lower }}.yml"
-    - "{{ ansible_distribution | lower }}.yml"
-    - "{{ ansible_os_family | lower }}.yml"
-    - default.yml
-
-# Variable configuration.
-- include_tasks: variables.yml
-
 - include_tasks: 01-install.yml
 
-# Configure PHP.
+# # Configure PHP.
 - include_tasks: 10-configure.yml
 - include_tasks: 15-dynamic-pools.yml
-#- include_tasks: 90-service.yml
+- include_tasks: 90-service.yml

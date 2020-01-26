@@ -8,11 +8,15 @@ galaxy_info:
   license: "license (BSD, MIT)"
   min_ansible_version: 2.4
   platforms:
-  - name: Debian
-    versions:
-    - all
-  - name: Ubuntu
-    versions:
-    - trusty
-    - xenial
-    - bionic
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - trusty
+        - xenial
+        - bionic
+    - name: CentOS
+      versions:
+        - 7
+        - 8

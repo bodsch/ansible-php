@@ -1,4 +1,9 @@
 ---
+# - name: Destroy
+#   hosts: localhost
+#   connection: local
+#   gather_facts: false
+
 - name: Destroy
   hosts: localhost
   connection: local
@@ -30,3 +35,4 @@
         docker_host: "{{ item.docker_host | default('unix://var/run/docker.sock') }}"
         state: absent
       with_items: "{{ molecule_yml.platforms | molecule_get_docker_networks }}"
+
