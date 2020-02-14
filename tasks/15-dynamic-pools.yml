@@ -16,4 +16,4 @@
   when:
     - php_fpm_pools | length > 0
   notify:
-    - restart php-fpm
+    restart php-fpm
