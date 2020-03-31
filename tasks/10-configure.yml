@@ -87,7 +87,7 @@
         state: link
       when:
         - ansible_distribution | lower == 'debian'
-        - item.0.enabled | bool | default(false) == true
+        - item.0.enabled | bool | default(false)
       with_nested:
         - '{{ php_modules }}'
         - "{{ php_conf_paths }}"
@@ -99,7 +99,7 @@
         state: absent
       when:
         - ansible_distribution | lower == 'debian'
-        - item.0.enabled | bool | default(false) == false
+        - item.0.enabled | bool | default(false)
       with_nested:
         - '{{ php_modules }}'
         - "{{ php_conf_paths }}"

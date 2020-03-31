@@ -10,7 +10,6 @@
 
 - include_tasks: 01-install.yml
 
-# # Configure PHP.
 - include_tasks: 10-configure.yml
 - include_tasks: 15-dynamic-pools.yml
 - include_tasks: 90-service.yml

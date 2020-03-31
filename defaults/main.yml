@@ -84,6 +84,7 @@ php_fpm_pools: []
 #     listen.owner: "{{ php_fpm_pool_user }}"
 #     listen.group: "{{ php_fpm_pool_group }}"
 #     listen: "{{ php_fpm_socket_directory }}/$pool.sock"
+#     # static, dynamic or ondemand
 #     pm: ondemand
 #     pm.max_children: 10
 #     pm.start_servers: 4

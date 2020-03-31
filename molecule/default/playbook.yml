@@ -3,15 +3,22 @@
   any_errors_fatal: false
   environment:
     NETRC: ''
+  vars:
+
+    php_fpm_pools:
+      - name: worker-01
+        user: "{{ php_fpm_pool_user }}"
+        group: "{{ php_fpm_pool_group }}"
+        listen.owner: "{{ php_fpm_pool_user }}"
+        listen.group: "{{ php_fpm_pool_group }}"
+        listen: "/run/php/$pool.sock"
+        # static, dynamic or ondemand
+        pm: ondemand
+        pm.max_children: 10
+        pm.start_servers: 4
+        pm.min_spare_servers: 2
+        pm.max_spare_servers: 6
+
   roles:
-    # - role: nginx
+    - role: nginx
     - role: ansible-php
-#      vars:
-#        php_fpm_pools:
-#          - name: worker-01
-#            user: www-data
-#            group: www-data
-#            listen.owner: www-data
-#            listen.group: www-data
-#            listen: "/run/php/$pool.sock"
-#

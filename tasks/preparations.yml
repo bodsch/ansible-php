@@ -20,7 +20,7 @@
         enabled: 1
 
     - name: Install remi repo.
-      yum:
+      package:
         name: "http://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm"
         state: present
 

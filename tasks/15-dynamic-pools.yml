@@ -7,6 +7,20 @@
   when:
     - php_fpm_default_pool.delete
 
+- name: assert needed pool variables
+  assert:
+    msg: "needed variable are not defined"
+    that:
+      - item.group is defined
+      - item.pm is defined and (item.pm == 'static' or item.pm == 'dynamic' or item.pm == 'ondemand')
+      - item['pm.max_children'] is defined
+      - item['pm.start_servers'] is defined
+      - item['pm.min_spare_servers'] is defined
+      - item['pm.max_spare_servers'] is defined
+  when: php_fpm_pools | length > 0
+  loop:
+    "{{ php_fpm_pools }}"
+
 - name: create pool configuration
   template:
     src: pool.conf.j2

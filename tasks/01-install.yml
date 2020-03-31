@@ -2,12 +2,15 @@
 
 - name: ensure PHP packages are installed.
   package:
-    name: "{{ item }}"
+    name: "{{ php_packages }}"
     state: "{{ php_packages_state }}"
-  loop:
-    "{{ php_packages }}"
 
 - block:
+    - name: create PHP directory under /etc
+      file:
+        path: "/etc/php/{{ php_version }}"
+        state: directory
+
     - name: create links for PHP packages
       file:
         src: "{{ item.src }}"
@@ -20,8 +23,9 @@
         - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/pear", dest: /usr/bin/pear }
         - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/phar", dest: /usr/bin/phar }
         - { src: "/opt/remi/php{{ php_package_version }}/root/usr/sbin/php-fpm", dest: /usr/sbin/php-fpm }
-        - { src: "/etc/opt/remi/php{{ php_package_version }}/php.d", dest: /etc/php.d }
-        - { src: "/etc/opt/remi/php{{ php_package_version }}/php-fpm.d", dest: /etc/php-fpm.d }
+        - { src: "/etc/opt/remi/php{{ php_package_version }}/php.d", dest: "/etc/php/{{ php_version }}/php.d" }
+        - { src: "/etc/opt/remi/php{{ php_package_version }}/php-fpm.d", dest: "/etc/php/{{ php_version }}/php-fpm.d" }
+        - { src: "/etc/php/{{ php_version }}/php-fpm.d", dest: "{{ php_fpm_pool_conf_path }}" }
         - { src: "/usr/lib/systemd/system/php{{ php_package_version }}-php-fpm.service", dest: /usr/lib/systemd/system/php-fpm.service }
 
     - name: create overwrite.conf for systemd
@@ -34,9 +38,9 @@
 
   when: ansible_os_family | lower == 'redhat'
 
-
-- name: detect installed php version
-  shell: "php -v 2> /dev/null | grep NTS | awk -F 'PHP ' '{printf $2}' | cut -d . -f 1-2"
+- name: detect installed php version  # noqa 301 306
+  shell: |
+    php -v 2> /dev/null | grep NTS | awk -F 'PHP ' '{printf $2}' | cut -d . -f 1-2
   register: __installed_php_version
 
 - name: define php version.
