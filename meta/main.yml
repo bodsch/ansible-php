@@ -4,9 +4,8 @@ dependencies: []
 galaxy_info:
   author: Bodo Schulz
   description: ansible role for PHP
-  company: ""
-  license: "license (BSD, MIT)"
-  min_ansible_version: 2.4
+  license: Apapche
+  min_ansible_version: 2.8
   platforms:
     - name: Debian
       versions:
@@ -20,3 +19,10 @@ galaxy_info:
       versions:
         - 7
         - 8
+
+  galaxy_tags:
+    - programing
+    - language
+    - php
+    - fpm
+    - web

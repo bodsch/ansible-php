@@ -10,12 +10,14 @@
       file:
         path: "/etc/php/{{ php_version }}"
         state: directory
+        mode: 0750
 
     - name: create links for PHP packages
       file:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
         state: link
+        mode: 0750
       loop:
         - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/php", dest: /usr/bin/php }
         - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/php-cgi", dest: /usr/bin/php-cgi }
@@ -32,6 +34,7 @@
       template:
         src: systemd/overwrite.conf.j2
         dest: "/etc/systemd/system/php{{ php_package_version }}-php-fpm.service.d/override.conf"
+        mode: 0750
       notify:
         - systemctl daemon-reload
         - restart php-fpm

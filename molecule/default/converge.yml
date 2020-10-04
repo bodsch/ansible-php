@@ -20,5 +20,4 @@
         pm.max_spare_servers: 6
 
   roles:
-    - role: nginx
     - role: ansible-php

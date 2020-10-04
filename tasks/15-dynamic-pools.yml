@@ -25,6 +25,7 @@
   template:
     src: pool.conf.j2
     dest: "{{ php_fpm_pool_conf_path }}/{{ item.name }}.conf"
+    mode: 0644
     backup: true
   with_items: "{{ php_fpm_pools }}"
   when:
