@@ -21,8 +21,8 @@ script:
 # rename project directory to match Galaxy role name
 before_script:
   - cd ../
-  - mv ansible-icingaweb2 bodsch.icingaweb2
-  - cd bodsch.icingaweb2
+  - mv ansible-php bodsch.php
+  - cd bodsch.php
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
