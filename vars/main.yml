@@ -77,8 +77,8 @@ _php_conf_paths:
   debian:
     - '/etc/php/{{ php_version }}/fpm'
     - '/etc/php/{{ php_version }}/cli'
-  centos:
-    - /etc
+  redhat:
+    - "/etc/php/{{ php_version }}"
   archlinux:
     - /etc
 
@@ -91,7 +91,7 @@ _php_extension_conf_paths:
     - '/etc/php/{{ php_version }}/fpm/conf.d'
     - '/etc/php/{{ php_version }}/cli/conf.d'
     - '/etc/php/{{ php_version }}/mods-available'
-  centos:
+  redhat:
     - /etc/php.d
   archlinux:
     - /etc/php/conf.d
@@ -99,42 +99,42 @@ _php_extension_conf_paths:
 _php_fpm_daemon:
   default: 'php{{ php_version }}-fpm'
   debian: 'php{{ php_version }}-fpm'
-  centos: php-fpm
+  redhat: php-fpm
   archlinux: php-fpm
 
 _php_fpm_pool_user:
   default: nobody
   debian: www-data
-  centos: nobody
+  redhat: nginx
   archlinux: http
 
 _php_fpm_pool_group:
   default: nogroup
   debian: www-data
-  centos: nobody
+  redhat: nginx
   archlinux: http
 
 _php_fpm_conf_path:
   default: "/etc/php/{{ php_version }}/fpm"
   debian: "/etc/php/{{ php_version }}/fpm"
-  centos: /etc
+  redhat: /etc
   archlinux: /etc/php/php-fpm.d
 
 _php_fpm_pool_conf_path:
   default: "/etc/php/{{ php_version }}/fpm/pool.d"
   debian: "/etc/php/{{ php_version }}/fpm/pool.d"
-  centos: /etc/php-fpm.d
+  redhat: /etc/php-fpm.d
   archlinux: /etc/php/php-fpm.d
 
 _php_webserver_daemon:
   default: nginx
   debian: nginx
-  centos: nginx
+  redhat: nginx
 
 _php_modules_conf_paths:
   default: "/etc/php/{{ php_version }}/mods-available"
   debian: "/etc/php/{{ php_version }}/mods-available"
-  centos: /etc/php.d
+  redhat: /etc/php.d
 
 
 php_packages: "{{
@@ -168,7 +168,7 @@ php_fpm_pool_user: "{{
 php_fpm_pool_group: "{{
           _php_fpm_pool_group[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
   default(_php_fpm_pool_group[ansible_distribution | lower] |
-  default(_php_fpm_pool_group[ansible_os_family] |
+  default(_php_fpm_pool_group[ansible_os_family | lower] |
   default(_php_fpm_pool_group['default']))) }}"
 
 php_fpm_conf_path: "{{

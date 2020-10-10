@@ -46,6 +46,8 @@
         option: enabled
         value: "1"
         mode: 0644
-      when: ansible_distribution_version | int >= 8
+      when:
+        - ansible_distribution_version | int >= 8
+        - not ansible_distribution | lower == "oraclelinux"
 
   when: ansible_os_family | lower == 'redhat'

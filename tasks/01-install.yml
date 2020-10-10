@@ -30,9 +30,15 @@
         - { src: "/etc/php/{{ php_version }}/php-fpm.d", dest: "{{ php_fpm_pool_conf_path }}" }
         - { src: "/usr/lib/systemd/system/php{{ php_package_version }}-php-fpm.service", dest: /usr/lib/systemd/system/php-fpm.service }
 
+    - name: create php{{ php_package_version }}-php-fpm.service.d
+      file:
+        path: "/etc/systemd/system/php{{ php_package_version }}-php-fpm.service.d"
+        state: directory
+        mode: 0750
+
     - name: create overwrite.conf for systemd
       template:
-        src: systemd/overwrite.conf.j2
+        src: "systemd/overwrite.conf.j2"
         dest: "/etc/systemd/system/php{{ php_package_version }}-php-fpm.service.d/override.conf"
         mode: 0750
       notify:
