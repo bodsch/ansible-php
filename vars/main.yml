@@ -50,7 +50,6 @@ _php_packages:
     - php73
     - php73-php-cli
     - php73-php-common
-    - php73-php-devel
     - php73-php-fpm
     - php73-php-gd
     - php73-php-ldap

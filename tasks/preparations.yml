@@ -60,8 +60,8 @@
 - name: define pool user
   set_fact:
     php_fpm_pool_user: "{{ php_fpm_pool_user_default }}"
-  when: (not php_fpm_pool_user is defined or
-    php_fpm_pool_user is defined and php_fpm_pool_user | string | length != 0)
+  when:
+    not php_fpm_pool_user is defined and php_fpm_pool_user | length == 0
 
 - block:
     - name: find primary group for user {{ php_fpm_pool_user }}
@@ -73,5 +73,5 @@
       set_fact:
         php_fpm_pool_group: "{{ _primary_group.stdout }}"
       when: _primary_group.stdout is defined
-  when: (not php_fpm_pool_group is defined or
-    php_fpm_pool_group is defined and php_fpm_pool_group | string | length != 0)
+  when:
+    not php_fpm_pool_group is defined and php_fpm_pool_group | length == 0
