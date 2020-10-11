@@ -102,17 +102,17 @@ _php_fpm_daemon:
   redhat: php-fpm
   archlinux: php-fpm
 
-_php_fpm_pool_user:
+_php_fpm_pool_user_default:
   default: nobody
   debian: www-data
-  redhat: nginx
+  redhat: nobody
   archlinux: http
 
-_php_fpm_pool_group:
-  default: nogroup
-  debian: www-data
-  redhat: nginx
-  archlinux: http
+# _php_fpm_pool_group:
+#   default: nogroup
+#   debian: www-data
+#   redhat: nginx
+#   archlinux: http
 
 _php_fpm_conf_path:
   default: "/etc/php/{{ php_version }}/fpm"
@@ -159,17 +159,17 @@ php_fpm_daemon: "{{
   default(_php_fpm_daemon[ansible_os_family | lower] |
   default(_php_fpm_daemon['default']))) }}"
 
-php_fpm_pool_user: "{{
-          _php_fpm_pool_user[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
-  default(_php_fpm_pool_user[ansible_distribution | lower] |
-  default(_php_fpm_pool_user[ansible_os_family | lower] |
-  default(_php_fpm_pool_user['default']))) }}"
+php_fpm_pool_user_default: "{{
+          _php_fpm_pool_user_default[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
+  default(_php_fpm_pool_user_default[ansible_distribution | lower] |
+  default(_php_fpm_pool_user_default[ansible_os_family | lower] |
+  default(_php_fpm_pool_user_default['default']))) }}"
 
-php_fpm_pool_group: "{{
-          _php_fpm_pool_group[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
-  default(_php_fpm_pool_group[ansible_distribution | lower] |
-  default(_php_fpm_pool_group[ansible_os_family | lower] |
-  default(_php_fpm_pool_group['default']))) }}"
+# php_fpm_pool_group: "{{
+#           _php_fpm_pool_group[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |
+#   default(_php_fpm_pool_group[ansible_distribution | lower] |
+#   default(_php_fpm_pool_group[ansible_os_family | lower] |
+#   default(_php_fpm_pool_group['default']))) }}"
 
 php_fpm_conf_path: "{{
           _php_fpm_conf_path[ansible_distribution | lower ~ '-' ~ ansible_distribution_major_version] |

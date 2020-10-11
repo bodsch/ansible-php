@@ -51,3 +51,36 @@
         - not ansible_distribution | lower == "oraclelinux"
 
   when: ansible_os_family | lower == 'redhat'
+
+# - name: set php_fpm_pool_user to {{ _primary_group.stdout }}
+#   set_fact:
+#     php_fpm_pool_user: php_fpm_pool_user_default
+#   when: _primary_group.stdout is defined
+
+- name: define pool user
+  set_fact:
+    php_fpm_pool_user: php_fpm_pool_user_default
+  when: (not php_fpm_pool_user is defined or
+    php_fpm_pool_user is defined and php_fpm_pool_user | string == '')
+
+- block:
+    - name: find primary group for user {{ php_fpm_pool_user }}
+      command:
+        cmd: getent group {{ php_fpm_pool_user }} | cut -d ':' -f1
+      register: _primary_group
+
+    - name: set php_fpm_pool_group to {{ _primary_group.stdout }}
+      set_fact:
+        php_fpm_pool_group: "{{ _primary_group.stdout }}"
+      when: _primary_group.stdout is defined
+  when: (not php_fpm_pool_group is defined or
+    php_fpm_pool_group is defined and php_fpm_pool_group | string == '')
+
+
+
+# - debug:
+#     msg:
+#       - "icingaweb_dependencies      : {{ icingaweb_dependencies }}"
+#       - "icingaweb_php_dependencies  : {{ icingaweb_php_dependencies }}"
+#       - "icingaweb_php_packages      : {{ icingaweb_php_packages }}"
+
