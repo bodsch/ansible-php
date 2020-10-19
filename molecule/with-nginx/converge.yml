@@ -20,4 +20,4 @@
         pm.max_spare_servers: 6
 
   roles:
-    - role: ansible-php
+    - role: bodsch.php

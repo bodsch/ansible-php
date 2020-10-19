@@ -16,7 +16,7 @@ install:
   - pip install -r test-requirements.txt
 
 script:
-  - molecule test
+  # - molecule test
   - molecule test --scenario-name with-nginx
 
 # rename project directory to match Galaxy role name
