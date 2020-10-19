@@ -57,6 +57,13 @@
 #     php_fpm_pool_user: php_fpm_pool_user_default
 #   when: _primary_group.stdout is defined
 
+- name: do facts module to get latest information
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+      - facter
+
 - name: define pool user
   set_fact:
     php_fpm_pool_user: "{{ php_fpm_pool_user_default }}"
@@ -64,14 +71,19 @@
     not php_fpm_pool_user is defined or php_fpm_pool_user | length == 0
 
 - block:
-    - name: find primary group for user {{ php_fpm_pool_user }}
+    - name: "find primary group for user '{{ php_fpm_pool_user }}'"
       shell: |
         getent group {{ php_fpm_pool_user }} | cut -d ':' -f1
       register: _primary_group
 
-    - name: set php_fpm_pool_group to {{ _primary_group.stdout }}
+    - name: "set php_fpm_pool_group to '{{ _primary_group.stdout }}'"
       set_fact:
         php_fpm_pool_group: "{{ _primary_group.stdout }}"
       when: _primary_group.stdout is defined
   when:
     not php_fpm_pool_group is defined or php_fpm_pool_group | length == 0
+
+- name: assert pool group
+  assert:
+    that: php_fpm_pool_group is defined or php_fpm_pool_group | length != 0
+    msg: "no php-fpmpool group detected"
