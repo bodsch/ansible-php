@@ -1,5 +1,5 @@
-molecule>=2.15.0
+molecule==3.0.8
 docker
-ansible-lint>=3.4.0
+ansible-lint
 testinfra>=1.7.0
-jmespath
+flake8
