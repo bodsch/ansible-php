@@ -30,7 +30,7 @@
     state: directory
     owner: "{{ php_fpm_pool_user }}"
     group: "{{ php_fpm_pool_group }}"
-    mode: 0750
+    mode: 0775
 
 - name: create php.ini configuration file
   template:
@@ -67,8 +67,31 @@
     mode: 0644
   notify: restart php-fpm
 
+- debug:
+    msg:
+      - "php_fpm_conf_path        : {{ php_fpm_conf_path }}"
+      - "php_modules_conf_paths   : {{ php_modules_conf_paths | default('') }}"
+      - "php_extension_conf_paths : {{ php_extension_conf_paths | default('') }}"
+      - "php_conf_paths           : {{ php_conf_paths | default('') }}"
+      - "modules                  : {{ php_modules | list }}"
+
+#    ok: [instance] =>
+#      msg:
+#      - 'php_fpm_conf_path        : /etc'
+#      - 'php_modules_conf_paths   : /etc/php.d'
+#      - 'php_extension_conf_paths : [''/etc/php/7.3/fpm/conf.d'', ''/etc/php/7.3/cli/conf.d'', ''/etc/php/7.3/mods-available'']'
+#      - 'php_conf_paths           : [''/etc/php/7.3/fpm'', ''/etc/php/7.3/cli'']'
+
+# CENTOS
+#    ok: [instance] =>
+#      msg:
+#      - 'php_fpm_conf_path        : /etc'
+#      - 'php_modules_conf_paths   : /etc/php.d'
+#      - 'php_extension_conf_paths : [''/etc/php/7.3/fpm/conf.d'', ''/etc/php/7.3/cli/conf.d'', ''/etc/php/7.3/mods-available'']'
+#      - 'php_conf_paths           : [''/etc/opt/remi/php73/php.d'']'
+
 - block:
-    - name: ensure the modules directory exists
+    - name: ensure the modules directory {{ php_modules_conf_paths }} exists
       file:
         path: "{{ php_modules_conf_paths }}"
         state: directory
@@ -82,16 +105,18 @@
         src: php_module.ini.j2
         dest: "{{ php_modules_conf_paths }}/{{ item.name }}.ini"
         mode: 0644
+      when: item.enabled | bool | default(false)
       with_items:
         '{{ php_modules }}'
 
     - name: enable modules
       file:
         src: "{{ php_modules_conf_paths }}/{{ item.0.name }}.ini"
-        dest: "{{ item.1 }}/conf.d/{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
+        dest: "{{ item.1 }}{{ '/conf.d/' if ansible_os_family | lower != 'redhat' else '/' }}{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
         state: link
+        force: true
       when:
-        - ansible_distribution | lower == 'debian'
+        # - ansible_distribution | lower == 'debian'
         - item.0.enabled | bool | default(false)
       with_nested:
         - '{{ php_modules }}'
@@ -100,11 +125,11 @@
 
     - name: disable modules
       file:
-        path: "{{ item.1 }}/conf.d/{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
+        path: "{{ item.1 }}{{ '/conf.d/' if ansible_os_family | lower != 'redhat' else '/' }}{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
         state: absent
       when:
-        - ansible_distribution | lower == 'debian'
-        - item.0.enabled | bool | default(false)
+        # - ansible_distribution | lower == 'debian'
+        - not item.0.enabled | bool | default(false)
       with_nested:
         - '{{ php_modules }}'
         - "{{ php_conf_paths }}"

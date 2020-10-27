@@ -19,16 +19,26 @@
         state: link
         mode: 0750
       loop:
-        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/php", dest: /usr/bin/php }
-        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/php-cgi", dest: /usr/bin/php-cgi }
-        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/pecl", dest: /usr/bin/pecl }
-        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/pear", dest: /usr/bin/pear }
-        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/phar", dest: /usr/bin/phar }
-        - { src: "/opt/remi/php{{ php_package_version }}/root/usr/sbin/php-fpm", dest: /usr/sbin/php-fpm }
-        - { src: "/etc/opt/remi/php{{ php_package_version }}/php.d", dest: "/etc/php/{{ php_version }}/php.d" }
-        - { src: "/etc/opt/remi/php{{ php_package_version }}/php-fpm.d", dest: "/etc/php/{{ php_version }}/php-fpm.d" }
-        - { src: "/etc/php/{{ php_version }}/php-fpm.d", dest: "{{ php_fpm_pool_conf_path }}" }
-        - { src: "/usr/lib/systemd/system/php{{ php_package_version }}-php-fpm.service", dest: /usr/lib/systemd/system/php-fpm.service }
+        - src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/php"
+          dest: /usr/bin/php
+        - src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/php-cgi"
+          dest: /usr/bin/php-cgi
+        - src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/pecl"
+          dest: /usr/bin/pecl
+        - src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/pear"
+          dest: /usr/bin/pear
+        - src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/phar"
+          dest: /usr/bin/phar
+        - src: "/opt/remi/php{{ php_package_version }}/root/usr/sbin/php-fpm"
+          dest: /usr/sbin/php-fpm
+        - src: "/etc/opt/remi/php{{ php_package_version }}/php.d"
+          dest: "/etc/php/{{ php_version }}/php.d"
+        - src: "/etc/opt/remi/php{{ php_package_version }}/php-fpm.d"
+          dest: "/etc/php/{{ php_version }}/php-fpm.d"
+        - src: "/etc/php/{{ php_version }}/php-fpm.d"
+          dest: "{{ php_fpm_pool_conf_path }}"
+        - src: "/usr/lib/systemd/system/php{{ php_package_version }}-php-fpm.service"
+          dest: /usr/lib/systemd/system/php-fpm.service
 
     - name: create php{{ php_package_version }}-php-fpm.service.d
       file:
@@ -44,18 +54,21 @@
       notify:
         - systemctl daemon-reload
         - restart php-fpm
-
   when: ansible_os_family | lower == 'redhat'
 
-- name: detect installed php version  # noqa 301 306
-  shell: |
-    php -v 2> /dev/null | grep NTS | awk -F 'PHP ' '{printf $2}' | cut -d . -f 1-2
-  register: __installed_php_version
+- name: get the rpm or apt package facts
+  package_facts:
+    manager: "auto"
 
-- name: define php version.
+- name: define php version
   set_fact:
-    php_version: "{{ __installed_php_version.stdout }}"
-  when: __installed_php_version is defined and __installed_php_version.rc is defined and __installed_php_version.rc == 0
+    php_version: "{{ ansible_facts.packages[ 'php%s-php-fpm' % php_package_version ][0].version[0:3] }}"
+  when: ansible_os_family | lower == 'redhat'
+
+- name: define php version
+  set_fact:
+    php_version: "{{ ansible_facts.packages['php-fpm'][0].version.split(':')[1].split('+')[0] }}"
+  when: ansible_os_family | lower == 'debian' and ansible_facts.packages['php-fpm'] is defined
 
 - name: re-read OS-specific variables.
   include_vars: main.yml
