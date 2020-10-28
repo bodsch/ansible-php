@@ -5,9 +5,6 @@
 # BSD 2-clause (see LICENSE or https://opensource.org/licenses/BSD-2-Clause)
 
 from __future__ import absolute_import, division, print_function
-import json
-import os
-import sys
 import re
 
 from ansible.module_utils.basic import AnsibleModule
@@ -23,7 +20,7 @@ ANSIBLE_METADATA = {
 
 class PHPHelper(object):
     """
-    Main Class to implement the Icinga2 API Client
+        Main Class
     """
     module = None
 
@@ -32,25 +29,24 @@ class PHPHelper(object):
           Initialize all needed Variables
         """
 
-        self.os_family      = module.params.get("os_family")
+        self.os_family = module.params.get("os_family")
         self.redhat_version = module.params.get("redhat_version")
-
 
     def run(self):
         res = dict(
-            failed = False,
-            available_php_version = "none"
+            failed=False,
+            available_php_version="none"
         )
 
         version = ''
 
-        module.log(msg = "os_family      : {}".format(self.os_family))
-        module.log(msg = "redhat_version : {}".format(self.redhat_version))
+        module.log(msg="os_family      : {}".format(self.os_family))
+        module.log(msg="redhat_version : {}".format(self.redhat_version))
 
-        if( self.os_family == "Debian" ):
+        if(self.os_family == "Debian"):
             error, version, msg = self._search_apt()
 
-        if( self.os_family == "RedHat" ):
+        if(self.os_family == "RedHat"):
             error, version, msg = self._search_yum(self.redhat_version)
 
         res['failed'] = error
@@ -58,7 +54,6 @@ class PHPHelper(object):
         res['msg'] = msg
 
         return res
-
 
     def _search_apt(self):
         """
@@ -78,22 +73,21 @@ class PHPHelper(object):
 
         pkg = cache['php']
 
-        module.log(msg = "pkg      : {}".format(pkg))
-        module.log(msg = "installed: {}".format(pkg.is_installed))
-        module.log(msg = "shortname : {}".format(pkg.shortname))
+        # module.log(msg="pkg       : {}".format(pkg))
+        # module.log(msg="installed : {}".format(pkg.is_installed))
+        # module.log(msg="shortname : {}".format(pkg.shortname))
 
         if(pkg):
             pkg_version = pkg.versions[0]
             version = pkg_version.version
-            pattern = "^\d:(?P<version>\d.+)\+.*"
+            pattern = re.compile(r'^\d:(?P<version>\d.+)\+.*')
             result = re.search(pattern, version)
 
             version = result.group(1)
 
         return False, version, ''
 
-
-    def _search_yum(self, redhat_version = None):
+    def _search_yum(self, redhat_version=None):
         """
             yum info php73 | grep Summary | cut -d ':' -f 2 | tr -d '[:space:]' | cut -c23-25
 
@@ -101,7 +95,7 @@ class PHPHelper(object):
             we use remi packages for newer version
             https://blog.remirepo.net/post/2018/12/10/Install-PHP-7.3-on-CentOS-RHEL-or-Fedora
         """
-        module.log(msg = "search version {}".format(redhat_version))
+        # module.log(msg="search version {}".format(redhat_version))
 
         import subprocess
 
@@ -115,13 +109,12 @@ class PHPHelper(object):
             universal_newlines=True
         )
 
-        pattern = "^Version.*: (?P<version>\d\.\d)"
+        pattern = re.compile(r'^Version.*: (?P<version>\d\.\d)')
 
         for line in result.stdout:
             for match in re.finditer(pattern, line):
-                #module.log(msg = "   > {}".format(line.strip()))
                 result = re.search(pattern, line)
-                versions.append( result.group(1) )
+                versions.append(result.group(1))
 
         if(len(versions) == 0):
             msg = 'nothing found'
@@ -164,10 +157,10 @@ class PHPHelper(object):
 def main():
     global module
     module = AnsibleModule(
-        argument_spec = dict(
-            state           = dict(default="present", choices=["absent", "present"]),
-            os_family       = dict(required=True),
-            redhat_version  = dict(required=False, default=None)
+        argument_spec=dict(
+            state=dict(default="present", choices=["absent", "present"]),
+            os_family=dict(required=True),
+            redhat_version=dict(required=False, default=None)
 
         ),
         supports_check_mode=False,

@@ -67,13 +67,13 @@
     mode: 0644
   notify: restart php-fpm
 
-- debug:
-    msg:
-      - "php_fpm_conf_path        : {{ php_fpm_conf_path }}"
-      - "php_modules_conf_paths   : {{ php_modules_conf_paths | default('') }}"
-      - "php_extension_conf_paths : {{ php_extension_conf_paths | default('') }}"
-      - "php_conf_paths           : {{ php_conf_paths | default('') }}"
-      - "modules                  : {{ php_modules | list }}"
+# - debug:
+#     msg:
+#       - "php_fpm_conf_path        : {{ php_fpm_conf_path }}"
+#       - "php_modules_conf_paths   : {{ php_modules_conf_paths | default('') }}"
+#       - "php_extension_conf_paths : {{ php_extension_conf_paths | default('') }}"
+#       - "php_conf_paths           : {{ php_conf_paths | default('') }}"
+#       - "modules                  : {{ php_modules | list }}"
 
 #    ok: [instance] =>
 #      msg:
@@ -97,7 +97,7 @@
         state: directory
         owner: root
         group: root
-        mode: 0755
+        mode: 0750
       when: php_modules_conf_paths is defined
 
     - name: configure modules

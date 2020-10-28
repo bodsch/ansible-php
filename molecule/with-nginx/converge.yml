@@ -65,4 +65,4 @@
         priority: 30
 
   roles:
-    - role: bodsch.php
+    - role: ansible-php
