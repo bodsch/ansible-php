@@ -22,10 +22,18 @@ platforms:
 
 provisioner:
   name: ansible
+  ansible_args:
+    - --diff
+    # - -vv
   config_options:
     defaults:
+      ansible_managed: "Ansible managed: {file} modified on %Y-%m-%d %H:%M:%S by {uid} on {host}"
       deprecation_warnings: True
       stdout_callback: yaml
+      #error_on_undefined_vars: False
+      #system_warnings: True
+      #display_args_to_stdout: True
+      #command_warnings: False
 
 scenario:
   test_sequence:

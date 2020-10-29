@@ -52,11 +52,6 @@
 
   when: ansible_os_family | lower == 'redhat'
 
-# - name: set php_fpm_pool_user to {{ _primary_group.stdout }}
-#   set_fact:
-#     php_fpm_pool_user: php_fpm_pool_user_default
-#   when: _primary_group.stdout is defined
-
 - name: do facts module to get latest information
   setup:
     gather_subset:
@@ -72,18 +67,19 @@
 
 - block:
     - name: "find primary group for user '{{ php_fpm_pool_user }}'"
-      shell: |
-        getent group {{ php_fpm_pool_user }} | cut -d ':' -f1
-      register: _primary_group
+      getent:
+        database: group
+        key: "{{ php_fpm_pool_user }}"
+        split: ':'
 
-    - name: "set php_fpm_pool_group to '{{ _primary_group.stdout }}'"
+    - name: "set php_fpm_pool_group '{{ getent_group | list | first }}'"
       set_fact:
-        php_fpm_pool_group: "{{ _primary_group.stdout }}"
-      when: _primary_group.stdout is defined
+        php_fpm_pool_group: "{{ getent_group | list | first }}"
+      when: getent_group is defined
   when:
     not php_fpm_pool_group is defined or php_fpm_pool_group | length == 0
 
 - name: assert pool group
   assert:
-    that: php_fpm_pool_group is defined or php_fpm_pool_group | length != 0
+    that: php_fpm_pool_group is defined or php_fpm_pool_group | length == 0
     msg: "no php-fpmpool group detected"
