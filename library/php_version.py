@@ -132,23 +132,6 @@ class PHPHelper(object):
 
         return error, version, msg
 
-        # import yum
-        #
-        # yb = yum.YumBase()
-        #
-        # if not yb.setCacheDir(force=True, reuse=False):
-        #     module.error(msg = "Can't create a tmp. cachedir. ")
-        #     # sys.exit(1)
-        #
-        # results = yb.pkgSack.returnNewestByNameArch(patterns=["php*{}*runtime".format(redhat_version)])
-        #
-        # module.log(msg = "%s %s" % (results, type(results)))
-        #
-        # for pkg in results:
-        #     module.log(msg = "%s %s" % (pkg.name, pkg.version) )
-        #
-        # return ''
-
 
 # ===========================================
 # Module execution.
@@ -166,13 +149,7 @@ def main():
         supports_check_mode=False,
     )
 
-    try:
-        helper = PHPHelper()
-    except Exception as e:
-        module.fail_json(
-            msg="unable to connect to Icinga. Exception message: %s" % (e)
-        )
-
+    helper = PHPHelper()
     result = helper.run()
 
     module.exit_json(**result)
