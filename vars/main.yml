@@ -129,6 +129,14 @@ _php_modules_conf_paths:
   debian: "/etc/php/{{ php_version }}/mods-available"
   redhat: /etc/php.d
 
+_systemd_lib_directory:
+  default: /lib/systemd/system
+  debian: /lib/systemd/system
+  redhat: /usr/lib/systemd/system
+
+systemd_lib_directory: "{{
+          _systemd_lib_directory[ansible_os_family | lower] |
+  default(_systemd_lib_directory['default']) }}"
 
 php_packages: "{{
           _php_packages[ansible_distribution | lower~ '-' ~ ansible_distribution_major_version] |

@@ -95,8 +95,6 @@ class PHPHelper(object):
             we use remi packages for newer version
             https://blog.remirepo.net/post/2018/12/10/Install-PHP-7.3-on-CentOS-RHEL-or-Fedora
         """
-        # module.log(msg="search version {}".format(redhat_version))
-
         import subprocess
 
         version = ''
@@ -112,6 +110,7 @@ class PHPHelper(object):
         pattern = re.compile(r'^Version.*: (?P<version>\d\.\d)')
 
         for line in result.stdout:
+            # module.log(msg="result      : {}".format(line))
             for match in re.finditer(pattern, line):
                 result = re.search(pattern, line)
                 versions.append(result.group(1))

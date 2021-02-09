@@ -40,17 +40,21 @@
 
     # https://bugs.centos.org/view.php?id=16604
     - name: activate PowerTools repository
-      ini_file:
-        dest: /etc/yum.repos.d/CentOS-PowerTools.repo
-        section: PowerTools
-        option: enabled
-        value: "1"
+      template:
+        src: yum.repos.d/CentOS-Linux-PowerTools.repo.j2
+        dest: /etc/yum.repos.d/CentOS-Linux-PowerTools.repo
         mode: 0644
       when:
-        - ansible_distribution_version | int >= 8
+        - ansible_os_family | lower == 'redhat'
         - not ansible_distribution | lower == "oraclelinux"
+        - ansible_distribution_version | int >= 8
 
   when: ansible_os_family | lower == 'redhat'
+
+- name: update apt cache
+  apt:
+    update_cache: true
+  when: ansible_os_family | lower == 'debian'
 
 - name: do facts module to get latest information
   setup:
@@ -83,3 +87,11 @@
   assert:
     that: php_fpm_pool_group is defined or php_fpm_pool_group | length == 0
     msg: "no php-fpmpool group detected"
+
+- name: create ansible local facts directory
+  file:
+    dest: /etc/ansible/facts.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0775

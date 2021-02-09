@@ -42,14 +42,14 @@
 
     - name: create php{{ php_package_version }}-php-fpm.service.d
       file:
-        path: "/etc/systemd/system/php{{ php_package_version }}-php-fpm.service.d"
+        path: "{{ systemd_lib_directory }}/php{{ php_package_version }}-php-fpm.service.d"
         state: directory
         mode: 0750
 
     - name: create overwrite.conf for systemd
       template:
         src: "systemd/overwrite.conf.j2"
-        dest: "/etc/systemd/system/php{{ php_package_version }}-php-fpm.service.d/override.conf"
+        dest: "{{ systemd_lib_directory }}/php{{ php_package_version }}-php-fpm.service.d/override.conf"
         mode: 0750
       notify:
         - systemctl daemon-reload
@@ -60,12 +60,12 @@
   package_facts:
     manager: "auto"
 
-- name: define php version
+- name: define php version for redhat based distributions
   set_fact:
     php_version: "{{ ansible_facts.packages[ 'php%s-php-fpm' % php_package_version ][0].version[0:3] }}"
   when: ansible_os_family | lower == 'redhat'
 
-- name: define php version
+- name: define php version for debian based distributions
   set_fact:
     php_version: "{{ ansible_facts.packages['php-fpm'][0].version.split(':')[1].split('+')[0] }}"
   when: ansible_os_family | lower == 'debian' and ansible_facts.packages['php-fpm'] is defined
