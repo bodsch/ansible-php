@@ -14,8 +14,7 @@ defaults:
     working-directory: 'ansible-php'
 
 jobs:
-
-  debian:
+  tests:
     name: "${{ matrix.image }} / python: ${{ matrix.python-version }}, ansible: ${{ matrix.ansible-version }}"
     runs-on: ubuntu-18.04
     strategy:
@@ -48,22 +47,22 @@ jobs:
 
       - name: install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r test-requirements.txt
-
-      # See: https://github.com/geerlingguy/ansible-role-mysql/issues/422
-      - name: Disable AppArmor
-        run: |
-            set -x
-            sudo apt-get install apparmor-profiles
-            sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
-            sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
-
-      - name: test with tox
-        run: |
           cd ../
           mv ansible-php bodsch.php
           cd bodsch.php
+          python -m pip install --upgrade pip
+          pip install -r test-requirements.txt
+
+      # # See: https://github.com/geerlingguy/ansible-role-mysql/issues/422
+      # - name: Disable AppArmor
+      #   run: |
+      #       set -x
+      #       sudo apt-get install apparmor-profiles
+      #       sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
+      #       sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+
+      - name: test with tox
+        run: |
           tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule test
         env:
           PY_COLORS: '1'

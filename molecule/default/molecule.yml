@@ -7,6 +7,7 @@ driver:
 
 lint: |
   set -e
+  echo ${PWD}
   yamllint .
   ansible-lint .
   flake8 .
