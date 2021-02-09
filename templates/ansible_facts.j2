@@ -1,0 +1,13 @@
+#!/bin/bash
+# {{ ansible_managed }}
+cat <<EOF
+{
+  "daemon": "{{ php_fpm_daemon }}",
+  "user": "{{ php_fpm_pool_user }}",
+  "group": "{{ php_fpm_pool_group }}",
+  "version": {
+    "package": "{{ php_package_version }}",
+    "full": "{{ php_version }}"
+  }
+}
+EOF
