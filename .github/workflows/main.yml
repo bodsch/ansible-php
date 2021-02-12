@@ -50,7 +50,7 @@ jobs:
       - name: flake8
         run: flake8 .
 
-  tests:
+  test:
     name: "${{ matrix.image }} / python: ${{ matrix.python-version }}, ansible: ${{ matrix.ansible-version }}"
     needs:
       - lint
