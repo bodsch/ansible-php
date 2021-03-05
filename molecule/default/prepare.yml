@@ -13,17 +13,10 @@
 
     - name: install netstat
       package:
-        name: [ net-tools, iproute2 ]
-        state: present
-      when:
-        - ansible_os_family | lower in [ 'archlinux', 'debian' ]
-
-    - name: install netstat
-      package:
         name: [ net-tools ]
         state: present
       when:
-        - ansible_os_family | lower in [ 'redhat' ]
+        - ansible_os_family | lower in [ 'archlinux', 'debian', 'redhat' ]
 
     - debug:
         msg:

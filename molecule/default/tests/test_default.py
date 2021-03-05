@@ -148,16 +148,11 @@ def test_fpm_pools(host, get_vars):
         print(i)
 
     for pool in get_vars.get("php_fpm_pools"):
-
-        pp.pprint(pool)
-
+        #pp.pprint(pool)
         name = pool.get("name")
         listen = pool.get("listen")
-        # listen_group = pool.get("listen.group")
-        # listen_owner = pool.get("listen.owner")
-
         socket_name = listen.replace('$pool', name)
+        pp.pprint(socket_name)
 
-        socket = host.socket("unix://{}".format(socket_name))
-
-        assert socket.is_listening
+        assert host.file(socket_name).exists
+        assert host.socket("unix://{0}".format(socket_name)).is_listening
