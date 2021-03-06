@@ -148,7 +148,7 @@ def test_fpm_pools(host, get_vars):
         print(i)
 
     for pool in get_vars.get("php_fpm_pools"):
-        #pp.pprint(pool)
+        # pp.pprint(pool)
         name = pool.get("name")
         listen = pool.get("listen")
         socket_name = listen.replace('$pool', name)
