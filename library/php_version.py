@@ -7,6 +7,7 @@
 from __future__ import absolute_import, division, print_function
 import re
 
+from ansible.module_utils import distro
 from ansible.module_utils.basic import AnsibleModule
 
 __metaclass__ = type
@@ -18,42 +19,42 @@ ANSIBLE_METADATA = {
 }
 
 
-class PHPHelper(object):
+class PHPVersion(object):
     """
         Main Class
     """
     module = None
 
-    def __init__(self):
+    def __init__(self, module):
         """
           Initialize all needed Variables
         """
+        self.module = module
+        self.package_version = module.params.get("package_version")
 
-        self.os_family = module.params.get("os_family")
-        self.redhat_version = module.params.get("redhat_version")
+        (self.distribution, self.version, self.codename) = distro.linux_distribution(full_distribution_name=False)
 
     def run(self):
-        res = dict(
+        result = dict(
             failed=False,
             available_php_version="none"
         )
 
         version = ''
 
-        module.log(msg="os_family      : {}".format(self.os_family))
-        module.log(msg="redhat_version : {}".format(self.redhat_version))
-
-        if(self.os_family == "Debian"):
+        if(self.distribution.lower() in ["debian", "ubuntu"]):
             error, version, msg = self._search_apt()
 
-        if(self.os_family == "RedHat"):
-            error, version, msg = self._search_yum(self.redhat_version)
+        if(self.distribution.lower() in ["centos", "oracle", "redhat", "fedora"]):
+            error, version, msg = self._search_yum()
 
-        res['failed'] = error
-        res['available_php_version'] = version
-        res['msg'] = msg
+        result = dict(
+            failed=error,
+            available_php_version=version,
+            msg=msg
+        )
 
-        return res
+        return result
 
     def _search_apt(self):
         """
@@ -87,7 +88,7 @@ class PHPHelper(object):
 
         return False, version, ''
 
-    def _search_yum(self, redhat_version=None):
+    def _search_yum(self):
         """
             yum info php73 | grep Summary | cut -d ':' -f 2 | tr -d '[:space:]' | cut -c23-25
 
@@ -95,39 +96,56 @@ class PHPHelper(object):
             we use remi packages for newer version
             https://blog.remirepo.net/post/2018/12/10/Install-PHP-7.3-on-CentOS-RHEL-or-Fedora
         """
-        import subprocess
+        pattern = re.compile(r".*Version.*: (?P<version>\d\.\d)", re.MULTILINE)
+
+        package_version = self.package_version
+
+        if(package_version):
+            package_version = package_version.replace('.', '')
+
+        package_mgr = self.module.get_bin_path('yum', False)
+
+        if(not package_mgr):
+            package_mgr = self.module.get_bin_path('dnf', True)
+
+        if(not package_mgr):
+            return True, "", "no valid package manager (yum or dnf) found"
+
+        self.module.log(msg="  '{0}'".format(package_mgr))
+
+        rc, out, err = self.module.run_command(
+            [package_mgr, "info", "php{}*common".format(package_version)],
+            check_rc=False)
 
         version = ''
-        versions = []
 
-        result = subprocess.Popen(
-            ["yum", "info", "php{}*common".format(redhat_version)],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True
-        )
+        if(rc == 0):
+            versions = []
 
-        pattern = re.compile(r'^Version.*: (?P<version>\d\.\d)')
+            for line in out.splitlines():
+                # self.module.log(msg="line     : {}".format(line))
+                for match in re.finditer(pattern, line):
+                    result = re.search(pattern, line)
+                    versions.append(result.group('version'))
 
-        for line in result.stdout:
-            # module.log(msg="result      : {}".format(line))
-            for match in re.finditer(pattern, line):
-                result = re.search(pattern, line)
-                versions.append(result.group(1))
+            self.module.log(msg="versions      : '{0}'".format(versions))
 
-        if(len(versions) == 0):
+            if(len(versions) == 0):
+                msg = 'nothing found'
+                error = True
+
+            if(len(versions) == 1):
+                msg = ''
+                error = False
+                version = versions[0]
+
+            if(len(versions) > 1):
+                msg = 'more then one result found! choose one of them!'
+                error = True
+                version = ', '.join(versions)
+        else:
             msg = 'nothing found'
             error = True
-
-        if(len(versions) == 1):
-            msg = ''
-            error = False
-            version = versions[0]
-
-        if(len(versions) > 1):
-            msg = 'more then one result found! choose one of them!'
-            error = True
-            version = ', '.join(versions)
 
         return error, version, msg
 
@@ -137,18 +155,18 @@ class PHPHelper(object):
 #
 
 def main():
-    global module
     module = AnsibleModule(
         argument_spec=dict(
-            state=dict(default="present", choices=["absent", "present"]),
-            os_family=dict(required=True),
-            redhat_version=dict(required=False, default=None)
+            state=dict(default="present", choices=["absent", "present"]),  # NOT NEEDED
+            package_version=dict(required=False, default=''),
+            os_family=dict(required=False),  # OBSOLETE
+            redhat_version=dict(required=False, default=None)  # OBSOLETE
 
         ),
         supports_check_mode=False,
     )
 
-    helper = PHPHelper()
+    helper = PHPVersion(module)
     result = helper.run()
 
     module.exit_json(**result)

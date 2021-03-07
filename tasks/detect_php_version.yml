@@ -2,9 +2,7 @@
 
 - name: detect available php version
   php_version:
-    state: present
-    os_family: "{{ ansible_os_family }}"
-    redhat_version: "{{ php_redhat_version }}"
+    package_version: "{{ php_redhat_version }}"
   register: _php_version
 
 - name: "set php_version '{{ _php_version.available_php_version }}'"
