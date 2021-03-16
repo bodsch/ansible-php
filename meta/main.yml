@@ -2,6 +2,8 @@
 
 galaxy_info:
   role_name: ansible-php
+  namespace: bodsch
+
   author: Bodo Schulz
   description: ansible role for PHP
   license: Apapche
