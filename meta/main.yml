@@ -1,7 +1,7 @@
 ---
 
 galaxy_info:
-  role_name: ansible-php
+  role_name: php
   namespace: bodsch
 
   author: Bodo Schulz
