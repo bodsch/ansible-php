@@ -157,11 +157,7 @@ class PHPVersion(object):
 def main():
     module = AnsibleModule(
         argument_spec=dict(
-            state=dict(default="present", choices=["absent", "present"]),  # NOT NEEDED
             package_version=dict(required=False, default=''),
-            os_family=dict(required=False),  # OBSOLETE
-            redhat_version=dict(required=False, default=None)  # OBSOLETE
-
         ),
         supports_check_mode=False,
     )

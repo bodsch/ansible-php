@@ -1,5 +1,9 @@
 ---
 
+php_custom_packages:
+  - php-ldap
+  - php-imap
+
 php_fpm_pools:
   - name: worker-01
     user: "{{ php_fpm_pool_user }}"

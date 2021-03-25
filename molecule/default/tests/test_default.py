@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 from ansible.parsing.dataloader import DataLoader
 from ansible.template import Templar
@@ -11,13 +13,11 @@ pp = pprint.PrettyPrinter()
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
-"""
-    get molecule directories
-"""
-
 
 def base_directory():
-    """ ... """
+    """
+        get molecule directories
+    """
     cwd = os.getcwd()
 
     if('group_vars' in os.listdir(cwd)):
@@ -25,27 +25,24 @@ def base_directory():
         molecule_directory = "."
     else:
         directory = "."
-        molecule_directory = "molecule/{}".format(os.environ.get('MOLECULE_SCENARIO_NAME'))
+        molecule_directory = "molecule/{0}".format(os.environ.get('MOLECULE_SCENARIO_NAME'))
 
     return directory, molecule_directory
 
 
-"""
-    parse ansible variables
-    - defaults/main.yml
-    - vars/main.yml
-    - molecule/${MOLECULE_SCENARIO_NAME}/group_vars/all/vars.yml
-"""
-
-
 @pytest.fixture()
 def get_vars(host):
-    """ ... """
+    """
+        parse ansible variables
+        - defaults/main.yml
+        - vars/main.yml
+        - molecule/${MOLECULE_SCENARIO_NAME}/group_vars/all/vars.yml
+    """
     base_dir, molecule_dir = base_directory()
 
-    file_defaults = "file={}/defaults/main.yml name=role_defaults".format(base_dir)
-    file_vars = "file={}/vars/main.yml name=role_vars".format(base_dir)
-    file_molecule = "file={}/group_vars/all/vars.yml name=test_vars".format(molecule_dir)
+    file_defaults = "file={0}/defaults/main.yml name=role_defaults".format(base_dir)
+    file_vars = "file={0}/vars/main.yml name=role_vars".format(base_dir)
+    file_molecule = "file={0}/group_vars/all/vars.yml name=test_vars".format(molecule_dir)
 
     defaults_vars = host.ansible("include_vars", file_defaults).get("ansible_facts").get("role_defaults")
     vars_vars = host.ansible("include_vars", file_vars).get("ansible_facts").get("role_vars")
@@ -61,37 +58,47 @@ def get_vars(host):
     return result
 
 
-"""
-    return local fact
-"""
-
-
 def local_facts(host):
-    """ ... """
+    """
+        return local fact
+    """
     return host.ansible("setup").get("ansible_facts").get("ansible_local").get("php_fpm")
 
 
-"""
-    test insatlled package
-"""
-
-
 def test_installed_package(host, get_vars):
-    """ ... """
+    """
+        test insatlled package
+    """
     package = 'php-fpm'
     distribution = host.system_info.distribution
 
     if(distribution in ['redhat', 'centos', 'ol']):
         package_version = local_facts(host).get("version").get("package")
-        package = 'php{version}-php-fpm'.format(version=package_version)
+        package = 'php{0}-php-fpm'.format(package_version)
 
     p = host.package(package)
     assert p.is_installed
 
 
-"""
-    test created directories
-"""
+def test_installed_custom_package(host, get_vars):
+    """
+        custom packages
+    """
+    custom_packages = get_vars.get("php_custom_packages")
+
+    if(custom_packages):
+        distribution = host.system_info.distribution
+
+        for pkg in custom_packages:
+            if(distribution in ['redhat', 'centos', 'ol']):
+                package_version = local_facts(host).get("version").get("package")
+                package = 'php{0}-{1}'.format(
+                    package_version,
+                    pkg
+                )
+
+            p = host.package(package)
+            assert p.is_installed
 
 
 @pytest.mark.parametrize("dirs", [
@@ -99,23 +106,22 @@ def test_installed_package(host, get_vars):
     "/etc/php/{}/fpm"
 ])
 def test_directories(host, dirs, get_vars):
-    """ ... """
+    """
+        test created directories
+    """
     package_version = local_facts(host).get("version").get("full")
 
     d = host.file(dirs.format(package_version))
-    pp.pprint("directory: {}".format(d))
+    pp.pprint("directory: {0}".format(d))
 
     assert d.is_directory
     assert d.exists
 
 
-"""
-    test service user and group
-"""
-
-
 def test_user(host, get_vars):
-
+    """
+        test service user and group
+    """
     user = local_facts(host).get("user")
     group = local_facts(host).get("group")
 
@@ -124,26 +130,20 @@ def test_user(host, get_vars):
     assert group in host.user(user).groups
 
 
-"""
-    is service running and enabled
-"""
-
-
 def test_service(host):
-    """ ... """
+    """
+        is service running and enabled
+    """
     service = host.service(local_facts(host).get("daemon"))
 
     assert service.is_enabled
     assert service.is_running
 
 
-"""
-    test sockets
-"""
-
-
 def test_fpm_pools(host, get_vars):
-    """ ... """
+    """
+        test sockets
+    """
     for i in host.socket.get_listening_sockets():
         print(i)
 
