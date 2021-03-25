@@ -90,6 +90,8 @@ def test_installed_custom_package(host, get_vars):
         distribution = host.system_info.distribution
 
         for pkg in custom_packages:
+            package = pkg
+
             if(distribution in ['redhat', 'centos', 'ol']):
                 package_version = local_facts(host).get("version").get("package")
                 package = 'php{0}-{1}'.format(
