@@ -39,6 +39,7 @@
     owner: root
     group: root
     mode: 0644
+    backup: true
   loop:
     "{{ php_conf_paths }}"
   when: php_use_managed_ini | bool
@@ -67,29 +68,6 @@
     mode: 0644
   notify: restart php-fpm
 
-# - debug:
-#     msg:
-#       - "php_fpm_conf_path        : {{ php_fpm_conf_path }}"
-#       - "php_modules_conf_paths   : {{ php_modules_conf_paths | default('') }}"
-#       - "php_extension_conf_paths : {{ php_extension_conf_paths | default('') }}"
-#       - "php_conf_paths           : {{ php_conf_paths | default('') }}"
-#       - "modules                  : {{ php_modules | list }}"
-
-#    ok: [instance] =>
-#      msg:
-#      - 'php_fpm_conf_path        : /etc'
-#      - 'php_modules_conf_paths   : /etc/php.d'
-#      - 'php_extension_conf_paths : [''/etc/php/7.3/fpm/conf.d'', ''/etc/php/7.3/cli/conf.d'', ''/etc/php/7.3/mods-available'']'
-#      - 'php_conf_paths           : [''/etc/php/7.3/fpm'', ''/etc/php/7.3/cli'']'
-
-# CENTOS
-#    ok: [instance] =>
-#      msg:
-#      - 'php_fpm_conf_path        : /etc'
-#      - 'php_modules_conf_paths   : /etc/php.d'
-#      - 'php_extension_conf_paths : [''/etc/php/7.3/fpm/conf.d'', ''/etc/php/7.3/cli/conf.d'', ''/etc/php/7.3/mods-available'']'
-#      - 'php_conf_paths           : [''/etc/opt/remi/php73/php.d'']'
-
 - block:
     - name: ensure the modules directory {{ php_modules_conf_paths }} exists
       file:
@@ -116,7 +94,6 @@
         state: link
         force: true
       when:
-        # - ansible_distribution | lower == 'debian'
         - item.0.enabled | bool | default(false)
       with_nested:
         - '{{ php_modules }}'
@@ -128,7 +105,6 @@
         path: "{{ item.1 }}{{ '/conf.d/' if ansible_os_family | lower != 'redhat' else '/' }}{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
         state: absent
       when:
-        # - ansible_distribution | lower == 'debian'
         - not item.0.enabled | bool | default(false)
       with_nested:
         - '{{ php_modules }}'

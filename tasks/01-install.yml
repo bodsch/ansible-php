@@ -5,6 +5,16 @@
     name: "{{ php_packages }}"
     state: "{{ php_packages_state }}"
 
+- name: add php version to custom package list
+  set_fact:
+    php_custom_packages: "{{ php_custom_packages | map('string_postfix', 'php' ~ php_package_version ~ '-' ) | list }}"
+  when: ansible_os_family | lower == 'redhat'
+
+- name: ensure custom PHP packages are installed.
+  package:
+    name: "{{ php_custom_packages }}"
+    state: "{{ php_packages_state }}"
+
 - block:
     - name: create PHP directory under /etc
       file:
@@ -55,20 +65,3 @@
         - systemctl daemon-reload
         - restart php-fpm
   when: ansible_os_family | lower == 'redhat'
-
-- name: get the rpm or apt package facts
-  package_facts:
-    manager: "auto"
-
-- name: define php version for redhat based distributions
-  set_fact:
-    php_version: "{{ ansible_facts.packages[ 'php%s-php-fpm' % php_package_version ][0].version[0:3] }}"
-  when: ansible_os_family | lower == 'redhat'
-
-- name: define php version for debian based distributions
-  set_fact:
-    php_version: "{{ ansible_facts.packages['php-fpm'][0].version.split(':')[1].split('+')[0] }}"
-  when: ansible_os_family | lower == 'debian' and ansible_facts.packages['php-fpm'] is defined
-
-- name: re-read OS-specific variables.
-  include_vars: main.yml

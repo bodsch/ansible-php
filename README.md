@@ -83,10 +83,27 @@ php_error_reporting: "E_ALL & ~E_DEPRECATED & ~E_STRICT"
 php_display_errors: "Off"
 php_display_startup_errors: "Off"
 
+php_custom_packages: []
+
 php_fpm_default_pool:
   delete: false
   name: www.conf
 ```
+
+### custom packages
+
+To install more PHP packages, you can find a list at `php_custom_packages` specify.
+
+E.G.:
+
+```
+php_custom_packages:
+  - php-ldap
+```
+
+The packages do not require version information, as it would be necessary for RedHat and Remis packages, for example. The role takes care that the package name is valid.
+
+As an example, `php-ldap` would be `php73-php-ldap`.
 
 
 ### php pools
