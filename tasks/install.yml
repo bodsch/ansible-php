@@ -8,7 +8,8 @@
 - name: add php version to custom package list
   set_fact:
     php_custom_packages: "{{ php_custom_packages | map('string_postfix', 'php' ~ php_package_version ~ '-' ) | list }}"
-  when: ansible_os_family | lower == 'redhat'
+  when:
+    - ansible_os_family | lower == 'redhat'
 
 - name: ensure custom PHP packages are installed.
   package:
@@ -64,4 +65,7 @@
       notify:
         - systemctl daemon-reload
         - restart php-fpm
-  when: ansible_os_family | lower == 'redhat'
+  when:
+    - ansible_os_family | lower == 'redhat'
+
+...

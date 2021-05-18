@@ -28,7 +28,7 @@ Tested on
 ## usage
 
 ```
-php_redhat_version: "73"
+php_redhat_version: "7.3"
 
 php_packages_state: present
 
@@ -123,6 +123,33 @@ php_fpm_pools:
     pm.min_spare_servers: 2
     pm.max_spare_servers: 6
     pm.status_path: /status
+
+  - name: worker-02
+    user: "{{ php_fpm_pool_user }}"
+    group: "{{ php_fpm_pool_group }}"
+    listen.owner: "{{ php_fpm_pool_user }}"
+    listen.group: "{{ php_fpm_pool_group }}"
+    listen: "{{ php_fpm_socket_directory }}/$pool.sock"
+    pm: dynamic
+    pm.max_children: 10
+    pm.start_servers: 4
+    pm.min_spare_servers: 2
+    pm.max_spare_servers: 6
+    pm.status_path: /status
+    ping.path: /ping
+    ping.response: pong
+    access.log: "{{ php_fpm_log_directory }}/$pool_access.log"
+    access.format: "%R - %n - %{HTTP_HOST}e - %u %t \"%m %r [%Q%q]\" %s %f %{mili}d %{kilo}M %C%%"
+    chdir: /
+    env:
+      PATH: "/usr/local/bin:/usr/bin:/bin"
+      TMPDIR: "{{ php_fpm_tmp_upload_diectory }}"
+    php_admin_value:
+      date.timezone: "Europe/Berlin"
+      log_errors: 'on'
+      max_execution_time: 300
+      memory_limit: 512M
+      upload_max_filesize: 32M
 ```
 
 ### php modules

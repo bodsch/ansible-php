@@ -8,9 +8,11 @@
 - name: detect available php version
   include_tasks: detect_php_version.yml
 
-- include_tasks: 01-install.yml
+- include_tasks: install.yml
 
-- include_tasks: 10-configure.yml
-- include_tasks: 15-dynamic-pools.yml
-- include_tasks: 90-service.yml
+- include_tasks: configure.yml
+- include_tasks: dynamic-pools.yml
+- include_tasks: service.yml
 - include_tasks: facts.yml
+
+...

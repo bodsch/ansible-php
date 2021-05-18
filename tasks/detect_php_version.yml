@@ -8,7 +8,9 @@
 - name: "set php_version '{{ _php_version.available_php_version }}'"
   set_fact:
     php_version: "{{ _php_version.available_php_version }}"
-  when: _php_version.available_php_version is defined and not _php_version.failed
+  when:
+    - _php_version.available_php_version is defined
+    - not _php_version.failed
 
 - name: set php_package_version
   set_fact:
@@ -19,3 +21,5 @@
 
 - name: include OS-specific variables.
   include_vars: main.yml
+
+...

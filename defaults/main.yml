@@ -21,7 +21,6 @@ php_fpm_log_directory: /var/log/php-fpm
 php_fpm_tmp_upload_diectory: /tmp/php-fpm
 php_fpm_socket_directory: /run/php
 
-
 # Possible Values: alert, error, warning, notice, debug
 php_fpm_log_level: notice
 
@@ -36,9 +35,6 @@ php_fpm_pm:
   spare_servers:
     min: 5
     max: 5
-
-# The executable to run when calling PHP from the command line.
-#php_executable: "php"
 
 # If this is set to false, none of the following options will have any effect.
 # Any and all changes to /etc/php.ini will be your responsibility.
@@ -83,95 +79,6 @@ php_fpm_default_pool:
   name: www.conf
 
 php_fpm_pools: []
-#   - name: worker-01
-#     user: "{{ php_fpm_pool_user }}"
-#     group: "{{ php_fpm_pool_group }}"
-#     listen.owner: "{{ php_fpm_pool_user }}"
-#     listen.group: "{{ php_fpm_pool_group }}"
-#     listen: "{{ php_fpm_socket_directory }}/$pool.sock"
-#     # static, dynamic or ondemand
-#     pm: ondemand
-#     pm.max_children: 10
-#     pm.start_servers: 4
-#     pm.min_spare_servers: 2
-#     pm.max_spare_servers: 6
-#     pm.status_path: /status
-#
-#   - name: worker-02
-#     user: "{{ php_fpm_pool_user }}"
-#     group: "{{ php_fpm_pool_group }}"
-#     listen.owner: "{{ php_fpm_pool_user }}"
-#     listen.group: "{{ php_fpm_pool_group }}"
-#     listen: "{{ php_fpm_socket_directory }}/$pool.sock"
-#     pm: dynamic
-#     pm.max_children: 10
-#     pm.start_servers: 4
-#     pm.min_spare_servers: 2
-#     pm.max_spare_servers: 6
-#     pm.status_path: /status
-#     ping.path: /ping
-#     ping.response: pong
-#     access.log: "{{ php_fpm_log_directory }}/$pool_access.log"
-#     access.format: "%R - %n - %{HTTP_HOST}e - %u %t \"%m %r [%Q%q]\" %s %f %{mili}d %{kilo}M %C%%"
-#     chdir: /
-#     env:
-#       PATH: "/usr/local/bin:/usr/bin:/bin"
-#       TMPDIR: "{{ php_fpm_tmp_upload_diectory }}"
-#     php_admin_value:
-#       # sendmail_path: "/usr/sbin/sendmail -t -i -f www@my.domain.com"
-#       # error_log: "/var/log/fpm-bar.www.log"
-#       date.timezone: "Europe/Berlin"
-#       log_errors: 'on'
-#       max_execution_time: 300
-#       memory_limit: 512M
-#       # session.save_handler: memcached
-#       # session.save_path: "127.0.0.1:11211"
-#       upload_max_filesize: 32M
-#       # upload_tmp_dir: "{{ php_fpm_tmp_upload_diectory }}/worker-02"
 
 # php modules
 php_modules: []
-#  - name: gd
-#    enabled: true
-#    priority: 20
-#    content: |
-#      extension=gd.so
-#  # OpCache settings
-#  - name: opcache
-#    enabled: true
-#    priority: 10
-#    content: |
-#      zend_extension=opcache.so
-#      opcache.enable=1
-#      opcache.enable_cli=1
-#      opcache.memory_consumption=128
-#      opcache.interned_strings_buffer=16
-#      opcache.max_accelerated_files=10000
-#      opcache.max_wasted_percentage=5
-#      opcache.validate_timestamps=1
-#      opcache.revalidate_path=0
-#      opcache.revalidate_freq=1
-#      opcache.max_file_size=0
-#  - name: pdo_mysql
-#    enabled: true
-#    priority: 20
-#    content: |
-#      extension=pdo_mysql.so
-#  - name: apcu
-#    enabled: false
-#    priority: 20
-#    content: |
-#      extension=apcu.so
-#      apc.shm_size=96M
-#      apc.enable_cli=0
-#      apc.rfc1867=1
-#  - name: gd
-#    enabled: true
-#    priority: 20
-#    content: |
-#      extension=gd.so
-#  - name: memcached
-#    enabled: false
-#    priority: 20
-#    content: |
-#      extension=memcached.so
