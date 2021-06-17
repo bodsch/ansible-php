@@ -5,10 +5,6 @@
     package_version: "{{ php_redhat_version }}"
   register: detected_php_version
 
-- name: ''
-  debug:
-    msg: "{{ detected_php_version }}"
-
 - name: "set php_version '{{ detected_php_version.available.version }}'"
   set_fact:
     php_version: "{{ detected_php_version.available.version }}"
