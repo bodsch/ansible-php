@@ -62,14 +62,14 @@ _php_packages:
     - "php{{ php_package_version }}-php-xmlrpc"
     - "php{{ php_package_version }}-php-opcache"
   archlinux:
-    - php
-    - php-cgi
-    - php-fpm
-    - php-gd
-    - php-imap
-    - php-intl
-    - php-memcached
-    - php-apcu
+    - php{{ php_major_version }}
+    - php{{ php_major_version }}-fpm
+    - php{{ php_major_version }}-gd
+    - php{{ php_major_version }}-imap
+    - php{{ php_major_version }}-intl
+    - php{{ php_major_version }}-memcached
+    - php{{ php_major_version }}-apcu
+    - php{{ php_major_version }}-igbinary
 
 _php_conf_paths:
   default:
@@ -81,7 +81,7 @@ _php_conf_paths:
   redhat:
     - "/etc/php/{{ php_version }}/php.d"
   archlinux:
-    - /etc
+    - /etc/php{{ php_major_version }}
 
 _php_extension_conf_paths:
   default:
@@ -93,13 +93,13 @@ _php_extension_conf_paths:
   redhat:
     - /etc/php.d
   archlinux:
-    - /etc/php/conf.d
+    - /etc/php{{ php_major_version }}/conf.d
 
 _php_fpm_daemon:
   default: 'php{{ php_version }}-fpm'
   debian: 'php{{ php_version }}-fpm'
   redhat: php-fpm
-  archlinux: php-fpm
+  archlinux: php-fpm{{ php_major_version }}
 
 _php_fpm_pool_user_default:
   default: nobody
@@ -111,13 +111,13 @@ _php_fpm_conf_path:
   default: "/etc/php/{{ php_version }}/fpm"
   debian: "/etc/php/{{ php_version }}/fpm"
   redhat: /etc
-  archlinux: /etc/php/php-fpm.d
+  archlinux: /etc/php{{ php_major_version }}
 
 _php_fpm_pool_conf_path:
   default: "/etc/php/{{ php_version }}/fpm/pool.d"
   debian: "/etc/php/{{ php_version }}/fpm/pool.d"
   redhat: /etc/php-fpm.d
-  archlinux: /etc/php/php-fpm.d
+  archlinux: /etc/php{{ php_major_version }}/php-fpm.d
 
 _php_webserver_daemon:
   default: nginx
@@ -128,6 +128,7 @@ _php_modules_conf_paths:
   default: "/etc/php/{{ php_version }}/mods-available"
   debian: "/etc/php/{{ php_version }}/mods-available"
   redhat: /etc/php.d
+  archlinux: "/etc/php{{ php_major_version }}/mods-available"
 
 _systemd_lib_directory:
   default: /lib/systemd/system

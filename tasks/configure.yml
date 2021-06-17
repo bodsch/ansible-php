@@ -42,6 +42,8 @@
     backup: true
   loop:
     "{{ php_conf_paths }}"
+  loop_control:
+    label: "{{ item }}"
   when:
     - php_use_managed_ini | bool
 
@@ -67,6 +69,7 @@
     owner: root
     group: root
     force: true
+    backup: true
     mode: 0644
   notify:
     - restart php-fpm
@@ -87,9 +90,12 @@
         src: php_module.ini.j2
         dest: "{{ php_modules_conf_paths }}/{{ item.name }}.ini"
         mode: 0644
+        backup: true
       when: item.enabled | bool | default(false)
-      with_items:
+      loop:
         '{{ php_modules }}'
+      loop_control:
+        label: "{{ item.name }} - enabled: {{ item.enabled }}"
 
     - name: enable modules
       file:
@@ -102,6 +108,8 @@
       with_nested:
         - '{{ php_modules }}'
         - "{{ php_conf_paths }}"
+      loop_control:
+        label: "{{ item.0.name }} - enabled: {{ item.0.enabled }}"
       notify:
         - restart php-fpm
 
@@ -114,6 +122,8 @@
       with_nested:
         - '{{ php_modules }}'
         - "{{ php_conf_paths }}"
+      loop_control:
+        label: "{{ item.0.name }} - enabled: {{ item.0.enabled }}"
       notify:
         - restart php-fpm
 

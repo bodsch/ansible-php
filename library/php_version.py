@@ -34,7 +34,6 @@ class PHPVersion(object):
 
         (self.distribution, self.version, self.codename) = distro.linux_distribution(full_distribution_name=False)
 
-        self.pacman_bin = module.get_bin_path('pacman', True)
 
     def run(self):
         result = dict(
@@ -55,11 +54,21 @@ class PHPVersion(object):
             error, version, msg = self._search_yum()
 
         if self.distribution.lower() in ["arch"]:
+            self.pacman_bin = module.get_bin_path('pacman', True)
             error, version, msg = self._search_pacman()
+
+        package_version = version.replace('.','')
+        major_version = version.split('.')[0]
+
+        version = dict(
+            version=version,
+            package_version=package_version,
+            major_version=major_version
+        )
 
         result = dict(
             failed=error,
-            available_php_version=version,
+            available=version,
             msg=msg
         )
 

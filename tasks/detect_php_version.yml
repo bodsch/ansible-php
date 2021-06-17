@@ -3,18 +3,23 @@
 - name: detect available php version
   php_version:
     package_version: "{{ php_redhat_version }}"
-  register: _php_version
+  register: detected_php_version
 
-- name: "set php_version '{{ _php_version.available_php_version }}'"
+- name: ''
+  debug:
+    msg: "{{ detected_php_version }}"
+
+- name: "set php_version '{{ detected_php_version.available.version }}'"
   set_fact:
-    php_version: "{{ _php_version.available_php_version }}"
+    php_version: "{{ detected_php_version.available.version }}"
+    php_package_version: "{{ detected_php_version.available.package_version }}"
+    php_major_version: "{{ detected_php_version.available.major_version }}"
   when:
-    - _php_version.available_php_version is defined
-    - not _php_version.failed
-
-- name: set php_package_version
-  set_fact:
-    php_package_version: "{{ php_version | replace('.','') }}"
+    - not detected_php_version.failed
+    - detected_php_version.available is defined
+    - detected_php_version.available.version is defined
+    - detected_php_version.available.package_version is defined
+    - detected_php_version.available.major_version is defined
 
 - name: do facts module to get latest information
   setup:

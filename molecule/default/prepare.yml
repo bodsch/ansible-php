@@ -6,14 +6,13 @@
   pre_tasks:
 
     - name: update package cache
-      apt:
+      package:
         update_cache: true
-      when:
-        - ansible_os_family | lower == 'debian'
 
     - name: install netstat
       package:
-        name: [ net-tools ]
+        name:
+          - net-tools
         state: present
       when:
         - ansible_os_family | lower in [ 'archlinux', 'debian', 'redhat' ]
@@ -24,4 +23,4 @@
           - "distribution         : {{ ansible_distribution }}"
           - "distribution version : {{ ansible_distribution_major_version }}"
           - "ansible version      : {{ ansible_version.full }}"
-          - "python version       : {{ ansible_python.version.major }}"
+          - "python version       : {{ ansible_python.version.major }}.{{ ansible_python.version.minor }}"

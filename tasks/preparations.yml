@@ -88,8 +88,10 @@
 
 - name: assert pool group
   assert:
-    that: php_fpm_pool_group is defined or php_fpm_pool_group | length == 0
-    msg: "no php-fpm pool group detected"
+    that:
+      - php_fpm_pool_group is defined or php_fpm_pool_group | length == 0
+    msg: no php-fpm pool group detected
+    quiet: true
 
 - name: create ansible local facts directory
   file:
