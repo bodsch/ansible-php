@@ -34,7 +34,6 @@ class PHPVersion(object):
 
         (self.distribution, self.version, self.codename) = distro.linux_distribution(full_distribution_name=False)
 
-
     def run(self):
         result = dict(
             failed=False,
@@ -54,10 +53,10 @@ class PHPVersion(object):
             error, version, msg = self._search_yum()
 
         if self.distribution.lower() in ["arch"]:
-            self.pacman_bin = module.get_bin_path('pacman', True)
+            self.pacman_bin = self.module.get_bin_path('pacman', True)
             error, version, msg = self._search_pacman()
 
-        package_version = version.replace('.','')
+        package_version = version.replace('.', '')
         major_version = version.split('.')[0]
 
         version = dict(
@@ -189,7 +188,6 @@ class PHPVersion(object):
         else:
             return True, "", "not found"
 
-
     def _pacman(self, args):
         '''   '''
         cmd = [self.pacman_bin] + args
@@ -197,14 +195,15 @@ class PHPVersion(object):
         self.module.log(msg="cmd: {}".format(cmd))
 
         rc, out, err = self.module.run_command(cmd, check_rc=True)
-        #self.module.log(msg="  rc : '{}'".format(rc))
-        #self.module.log(msg="  out: '{}' ({})".format(out, type(out)))
-        #self.module.log(msg="  err: '{}'".format(err))
+        # self.module.log(msg="  rc : '{}'".format(rc))
+        # self.module.log(msg="  out: '{}' ({})".format(out, type(out)))
+        # self.module.log(msg="  err: '{}'".format(err))
         return rc, out, err
 
 # ===========================================
 # Module execution.
 #
+
 
 def main():
     module = AnsibleModule(
