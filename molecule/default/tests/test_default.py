@@ -72,9 +72,15 @@ def test_installed_package(host, get_vars):
     package = 'php-fpm'
     distribution = host.system_info.distribution
 
+    pp.pprint(distribution)
+
     if(distribution in ['redhat', 'centos', 'ol']):
         package_version = local_facts(host).get("version").get("package")
         package = 'php{0}-php-fpm'.format(package_version)
+
+    if distribution == 'arch':
+        package_version = local_facts(host).get("version").get("major")
+        package = 'php{0}-fpm'.format(package_version)
 
     p = host.package(package)
     assert p.is_installed
@@ -111,13 +117,27 @@ def test_directories(host, dirs, get_vars):
     """
         test created directories
     """
+    distribution = host.system_info.distribution
+
     package_version = local_facts(host).get("version").get("full")
+    directories = [
+        "/etc/php/{}/cli",
+        "/etc/php/{}/fpm"
+    ]
 
-    d = host.file(dirs.format(package_version))
-    pp.pprint("directory: {0}".format(d))
+    if distribution == 'arch':
+        package_version = local_facts(host).get("version").get("major")
+        directories = [
+            "/etc/php{0}/conf.d",
+            "/etc/php{0}/mods-available",
+            "/etc/php{0}/php-fpm.d"
+        ]
 
-    assert d.is_directory
-    assert d.exists
+    for dirs in directories:
+        d = host.file(dirs.format(package_version))
+        pp.pprint("directory: {0}".format(d))
+
+        assert d.is_directory
 
 
 def test_user(host, get_vars):

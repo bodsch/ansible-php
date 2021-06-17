@@ -3,16 +3,31 @@
 - include: preparations.yml
   become: true
   tags:
-    - preparations
+    - php-fpm
 
 - name: detect available php version
   include_tasks: detect_php_version.yml
+  tags:
+    - php-fpm
 
 - include_tasks: install.yml
+  tags:
+    - php-fpm
 
 - include_tasks: configure.yml
+  tags:
+    - php-fpm
+
 - include_tasks: dynamic-pools.yml
+  tags:
+    - php-fpm
+
 - include_tasks: service.yml
+  tags:
+    - php-fpm
+
 - include_tasks: facts.yml
+  tags:
+    - php-fpm
 
 ...

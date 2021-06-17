@@ -50,6 +50,8 @@
           dest: "{{ php_fpm_pool_conf_path }}"
         - src: "/usr/lib/systemd/system/php{{ php_package_version }}-php-fpm.service"
           dest: /usr/lib/systemd/system/php-fpm.service
+      loop_control:
+        label: "{{ item.dest }}"
 
     - name: create php{{ php_package_version }}-php-fpm.service.d
       file:

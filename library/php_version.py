@@ -41,16 +41,33 @@ class PHPVersion(object):
         )
 
         version = ''
+        error = True
+        msg = "not supported distribution: {}".format(self.distribution)
 
-        if(self.distribution.lower() in ["debian", "ubuntu"]):
+        self.module.log(msg="  distribution : '{}'".format(self.distribution))
+
+        if self.distribution.lower() in ["debian", "ubuntu"]:
             error, version, msg = self._search_apt()
 
-        if(self.distribution.lower() in ["centos", "oracle", "redhat", "fedora"]):
+        if self.distribution.lower() in ["centos", "oracle", "redhat", "fedora"]:
             error, version, msg = self._search_yum()
+
+        if self.distribution.lower() in ["arch"]:
+            self.pacman_bin = self.module.get_bin_path('pacman', True)
+            error, version, msg = self._search_pacman()
+
+        package_version = version.replace('.', '')
+        major_version = version.split('.')[0]
+
+        version = dict(
+            version=version,
+            package_version=package_version,
+            major_version=major_version
+        )
 
         result = dict(
             failed=error,
-            available_php_version=version,
+            available=version,
             msg=msg
         )
 
@@ -149,10 +166,44 @@ class PHPVersion(object):
 
         return error, version, msg
 
+    def _search_pacman(self):
+
+        self.module.log(msg="= {function_name}()".format(function_name="_search_pacman"))
+
+        pattern = re.compile(r'^extra/php7[\w -](?P<version>\d\.\d).*-.*', re.MULTILINE)
+
+        results = []
+        args = []
+        args.append("--noconfirm")
+        args.append("--sync")
+        args.append("--search")
+        args.append("php")
+
+        rc, out, err = self._pacman(args)
+
+        version = re.search(pattern, out)
+
+        if version:
+            return False, version.group('version'), ""
+        else:
+            return True, "", "not found"
+
+    def _pacman(self, args):
+        '''   '''
+        cmd = [self.pacman_bin] + args
+
+        self.module.log(msg="cmd: {}".format(cmd))
+
+        rc, out, err = self.module.run_command(cmd, check_rc=True)
+        # self.module.log(msg="  rc : '{}'".format(rc))
+        # self.module.log(msg="  out: '{}' ({})".format(out, type(out)))
+        # self.module.log(msg="  err: '{}'".format(err))
+        return rc, out, err
 
 # ===========================================
 # Module execution.
 #
+
 
 def main():
     module = AnsibleModule(

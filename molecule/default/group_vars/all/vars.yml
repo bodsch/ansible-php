@@ -1,8 +1,8 @@
 ---
 
-php_custom_packages:
-  - php-ldap
-  - php-imap
+# php_custom_packages:
+#   - php-ldap
+#   - php-imap
 
 php_fpm_pools:
   - name: worker-01

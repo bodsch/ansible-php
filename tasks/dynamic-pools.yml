@@ -17,10 +17,13 @@
       - item['pm.start_servers'] is defined
       - item['pm.min_spare_servers'] is defined
       - item['pm.max_spare_servers'] is defined
+    quiet: true
   when:
     - php_fpm_pools | length > 0
   loop:
     "{{ php_fpm_pools }}"
+  loop_control:
+    label: "{{ item.name }}"
 
 - name: create pool configuration
   template:
@@ -28,7 +31,10 @@
     dest: "{{ php_fpm_pool_conf_path }}/{{ item.name }}.conf"
     mode: 0644
     backup: true
-  with_items: "{{ php_fpm_pools }}"
+  loop:
+    "{{ php_fpm_pools }}"
+  loop_control:
+    label: "{{ item.name }}"
   when:
     - php_fpm_pools | length > 0
   notify:

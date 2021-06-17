@@ -6,4 +6,4 @@
     NETRC: ''
 
   roles:
-    - role: bodsch.php
+    - role: ansible-php
