@@ -1,4 +1,6 @@
 
+# Ansible Role:  `php`
+
 ansible role to install fpm-php on varous systems.
 
 inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
@@ -22,12 +24,12 @@ Tested on
 * Debian 9 / 10
 * Ubuntu 18.04 / 20.04
 * CentOS 7 / 8
-* OracleLinux 8
-
+* OracleLinux 7 / 8
+* ArchLinux
 
 ## usage
 
-```
+```yaml
 php_redhat_version: "7.3"
 
 php_packages_state: present
@@ -96,7 +98,7 @@ To install more PHP packages, you can find a list at `php_custom_packages` speci
 
 E.G.:
 
-```
+```yaml
 php_custom_packages:
   - php-ldap
 ```
@@ -108,7 +110,7 @@ As an example, `php-ldap` would be `php73-php-ldap`.
 
 ### php pools
 
-```
+```yaml
 php_fpm_pools:
   - name: worker-01
     user: "{{ php_fpm_pool_user }}"
@@ -154,7 +156,7 @@ php_fpm_pools:
 
 ### php modules
 
-```
+```yaml
 php_modules:
   # gd
   - name: gd
