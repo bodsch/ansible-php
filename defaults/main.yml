@@ -18,7 +18,7 @@ php_packages_state: present
 #php_enable_webserver: true
 
 php_fpm_log_directory: /var/log/php-fpm
-php_fpm_tmp_upload_diectory: /tmp/php-fpm
+php_fpm_tmp_upload_directory: /tmp/php-fpm
 php_fpm_socket_directory: /run/php
 
 # Possible Values: alert, error, warning, notice, debug
@@ -78,6 +78,7 @@ php_fpm_default_pool:
   delete: false
   name: www.conf
 
+# for example
 php_fpm_pools: []
 
 # php modules

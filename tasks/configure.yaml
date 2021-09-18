@@ -4,7 +4,7 @@
   file:
     path: "{{ item }}"
     state: directory
-    mode: 0750
+    mode: 0755
     follow: true
   with_flattened:
     - "{{ php_conf_paths }}"
@@ -14,15 +14,15 @@
   file:
     path: "{{ php_fpm_log_directory }}"
     state: directory
-    mode: 0750
+    mode: 0755
 
 - name: ensure temp directory for upload exist
   file:
-    path: "{{ php_fpm_tmp_upload_diectory }}"
+    path: "{{ php_fpm_tmp_upload_directory }}"
     state: directory
     owner: "{{ php_fpm_pool_user }}"
     group: "{{ php_fpm_pool_group }}"
-    mode: 0750
+    mode: 0755
 
 - name: ensure socket directory exist
   file:
@@ -30,7 +30,7 @@
     state: directory
     owner: "{{ php_fpm_pool_user }}"
     group: "{{ php_fpm_pool_group }}"
-    mode: 0775
+    mode: 0755
 
 - name: create php.ini configuration file
   template:

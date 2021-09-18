@@ -52,7 +52,7 @@ class PHPVersion(object):
         if self.distribution.lower() in ["centos", "oracle", "redhat", "fedora"]:
             error, version, msg = self._search_yum()
 
-        if self.distribution.lower() in ["arch"]:
+        if self.distribution.lower() in ["arch", "artix"]:
             self.pacman_bin = self.module.get_bin_path('pacman', True)
             error, version, msg = self._search_pacman()
 
@@ -167,10 +167,14 @@ class PHPVersion(object):
         return error, version, msg
 
     def _search_pacman(self):
+        """
+            pacman support
 
+            pacman --noconfirm --sync --search php7 | grep -E "^(extra|world)\/php7 (.*)\[installed\]" | cut -d' ' -f2
+        """
         self.module.log(msg="= {function_name}()".format(function_name="_search_pacman"))
 
-        pattern = re.compile(r'^extra/php7[\w -](?P<version>\d\.\d).*-.*', re.MULTILINE)
+        pattern = re.compile(r'^(?P<repository>extra|world)\/php7[\w -](?P<version>\d\.\d).*-.*', re.MULTILINE)
 
         results = []
         args = []
@@ -215,6 +219,8 @@ def main():
 
     helper = PHPVersion(module)
     result = helper.run()
+
+    module.log(msg="  result : '{}'".format(result))
 
     module.exit_json(**result)
 

@@ -1,0 +1,31 @@
+---
+
+systemd_lib_directory: /lib/systemd/system
+
+php_packages:
+  - php{{ php_major_version }}
+  - php{{ php_major_version }}-fpm
+  - php{{ php_major_version }}-gd
+  - php{{ php_major_version }}-imap
+  - php{{ php_major_version }}-intl
+  - php{{ php_major_version }}-memcached
+  - php{{ php_major_version }}-apcu
+  - php{{ php_major_version }}-igbinary
+
+php_conf_paths:
+  - /etc/php{{ php_major_version }}
+
+php_extension_conf_paths:
+  - /etc/php{{ php_major_version }}/conf.d
+
+php_fpm_daemon: php-fpm{{ php_major_version }}
+
+php_fpm_pool_user_default: http
+
+php_fpm_conf_path: /etc/php{{ php_major_version }}
+
+php_fpm_pool_conf_path: /etc/php{{ php_major_version }}/php-fpm.d
+
+php_webserver_daemon: nginx
+
+php_modules_conf_paths: /etc/php{{ php_major_version }}/mods-available
