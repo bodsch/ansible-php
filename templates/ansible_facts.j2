@@ -3,6 +3,7 @@
 cat <<EOF
 {
   "daemon": "{{ php_fpm_daemon }}",
+  "socket_directory": "{{ php_fpm_socket_directory }}",
   "user": "{{ php_fpm_pool_user }}",
   "group": "{{ php_fpm_pool_group }}",
   "version": {

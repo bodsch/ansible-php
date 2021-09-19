@@ -2,6 +2,10 @@
 ; FPM Configuration ;
 ;;;;;;;;;;;;;;;;;;;;;
 
+; All relative paths in this configuration file are relative to PHP's install
+; prefix (/usr). This prefix can be dynamically changed by using the
+; '-p' argument from the command line.
+
 ;;;;;;;;;;;;;;;;;;
 ; Global Options ;
 ;;;;;;;;;;;;;;;;;;
@@ -12,8 +16,12 @@ error_log = {{ php_fpm_log_directory }}/error.log
 ;syslog.facility = daemon
 ;syslog.ident = php-fpm
 log_level = {{ php_fpm_log_level }}
+;log_limit = 4096
+;log_buffering = no
+
 ;emergency_restart_threshold = 0
 ;emergency_restart_interval = 0
+
 ;process_control_timeout = 0
 ; process.max = 128
 ; process.priority = -19
@@ -28,4 +36,3 @@ log_level = {{ php_fpm_log_level }}
 ;;;;;;;;;;;;;;;;;;;;
 
 include={{ php_fpm_pool_conf_path }}/*.conf
-

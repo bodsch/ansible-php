@@ -1,9 +1,9 @@
 
 # Ansible Role:  `php`
 
-ansible role to install fpm-php on varous systems.
+Ansible role to install fpm-php on various systems.
 
-inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
+Inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
 
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/bodsch/ansible-php/CI)][ci]
@@ -26,16 +26,18 @@ Tested on
 * CentOS 7 / 8
 * OracleLinux 7 / 8
 * ArchLinux
+* ArtixLinux
+
 
 ## usage
 
-```yaml
+```
 php_redhat_version: "7.3"
 
 php_packages_state: present
 
 php_fpm_log_directory: /var/log/php-fpm
-php_fpm_tmp_upload_diectory: /tmp/php-fpm
+php_fpm_tmp_upload_directory: /tmp/php-fpm
 php_fpm_socket_directory: /run/php
 
 php_fpm_log_level: notice
@@ -90,6 +92,11 @@ php_custom_packages: []
 php_fpm_default_pool:
   delete: false
   name: www.conf
+
+php_fpm_pools: []
+
+# php modules
+php_modules: []
 ```
 
 ### custom packages
@@ -98,19 +105,20 @@ To install more PHP packages, you can find a list at `php_custom_packages` speci
 
 E.G.:
 
-```yaml
+```
 php_custom_packages:
   - php-ldap
 ```
 
-The packages do not require version information, as it would be necessary for RedHat and Remis packages, for example. The role takes care that the package name is valid.
+The packages do not require version information, as it would be necessary for RedHat and Remis packages,
+for example. The role takes care that the package name is valid.
 
 As an example, `php-ldap` would be `php73-php-ldap`.
 
 
 ### php pools
 
-```yaml
+```
 php_fpm_pools:
   - name: worker-01
     user: "{{ php_fpm_pool_user }}"
@@ -156,20 +164,20 @@ php_fpm_pools:
 
 ### php modules
 
-```yaml
+```
 php_modules:
   # gd
   - name: gd
     enabled: true
     priority: 20
     content: |
-      extension=gd.so
+      extension=gd
   # OpCache settings
   - name: opcache
     enabled: true
     priority: 10
     content: |
-      zend_extension=opcache.so
+      zend_extension=opcache
       opcache.enable=1
       opcache.enable_cli=1
       opcache.memory_consumption=128
@@ -185,5 +193,7 @@ php_modules:
     enabled: true
     priority: 20
     content: |
-      extension=pdo_mysql.so
+      extension=pdo_mysql
 ```
+
+Under [documentation](documentation) you can find some module configurations that have been copied from php.ini.

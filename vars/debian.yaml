@@ -1,0 +1,40 @@
+---
+
+systemd_lib_directory: /lib/systemd/system
+
+php_packages:
+  - php-common
+  - php-cli
+  - php-fpm
+  - php-gd
+  - php-curl
+  - php-imap
+  - php-json
+  - php-opcache
+  - php-intl
+  - php-xml
+  - php-mysql
+  - php-mbstring
+  - php-memcached
+
+php_conf_paths:
+  - /etc/php/{{ php_version }}/fpm
+  - /etc/php/{{ php_version }}/cli
+
+php_extension_conf_paths:
+  - /etc/php/{{ php_version }}/fpm/conf.d
+  - /etc/php/{{ php_version }}/cli/conf.d
+
+php_fpm_daemon: php{{ php_version }}-fpm
+
+php_fpm_pool_user_default: www-data
+
+php_fpm_conf_path: /etc/php/{{ php_version }}/fpm
+
+php_fpm_pool_conf_path: /etc/php/{{ php_version }}/fpm/pool.d
+
+php_webserver_daemon: nginx
+
+php_modules_conf_paths: /etc/php/{{ php_version }}/mods-available
+
+...

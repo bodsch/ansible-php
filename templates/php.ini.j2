@@ -32,6 +32,7 @@ expose_php = {{ php_expose_php }}
 
 max_execution_time = {{ php_max_execution_time }}
 max_input_time = {{ php_max_input_time }}
+;max_input_nesting_level = 64
 max_input_vars = {{ php_max_input_vars }}
 memory_limit = {{ php_memory_limit }}
 
@@ -64,6 +65,8 @@ auto_prepend_file =
 auto_append_file =
 
 default_mimetype = "text/html"
+default_charset = "UTF-8"
+
 always_populate_raw_post_data = -1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -72,6 +75,7 @@ always_populate_raw_post_data = -1
 
 doc_root =
 user_dir =
+; extension_dir = "/usr/lib/php7/modules/"
 
 enable_dl = Off
 
@@ -82,6 +86,7 @@ realpath_cache_size = {{ php_realpath_cache_size }}
 ;;;;;;;;;;;;;;;;
 
 file_uploads = {{ php_file_uploads }}
+;upload_tmp_dir =
 upload_max_filesize = {{ php_upload_max_filesize }}
 max_file_uploads = {{ php_max_file_uploads }}
 
@@ -105,8 +110,8 @@ cli_server.color = On
 date.timezone = {{ php_date_timezone }}
 
 [Pdo_mysql]
-pdo_mysql.cache_size = 2000
-pdo_mysql.default_socket=
+; pdo_mysql.cache_size = 2000
+; pdo_mysql.default_socket=
 
 [mail function]
 ; For Win32 only.
@@ -114,58 +119,66 @@ SMTP = localhost
 smtp_port = 25
 
 ; For Unix only.  You may supply arguments as well (default: "sendmail -t -i").
+; mail.log =
+; mail.log = syslog
 sendmail_path = {{ php_sendmail_path }}
 
 mail.add_x_header = On
 
 [SQL]
-sql.safe_mode = Off
+; sql.safe_mode = Off
 
 [ODBC]
-odbc.allow_persistent = On
-odbc.check_persistent = On
-odbc.max_persistent = -1
-odbc.max_links = -1
-odbc.defaultlrl = 4096
-odbc.defaultbinmode = 1
+; odbc.allow_persistent = On
+; odbc.check_persistent = On
+; odbc.max_persistent = -1
+; odbc.max_links = -1
+; odbc.defaultlrl = 4096
+; odbc.defaultbinmode = 1
 
 [MySQL]
-mysql.allow_local_infile = On
-mysql.allow_persistent = On
-mysql.cache_size = 2000
-mysql.max_persistent = -1
-mysql.max_links = -1
-mysql.default_port =
-mysql.default_socket =
-mysql.default_host =
-mysql.default_user =
-mysql.default_password =
-mysql.connect_timeout = 60
-mysql.trace_mode = Off
+; mysql.allow_local_infile = On
+; mysql.allow_persistent = On
+; mysql.cache_size = 2000
+; mysql.max_persistent = -1
+; mysql.max_links = -1
+; mysql.default_port =
+; mysql.default_socket =
+; mysql.default_host =
+; mysql.default_user =
+; mysql.default_password =
+; mysql.connect_timeout = 60
+; mysql.trace_mode = Off
 
 [MySQLi]
-mysqli.max_persistent = -1
-mysqli.allow_persistent = On
-mysqli.max_links = -1
-mysqli.cache_size = 2000
-mysqli.default_port = 3306
-mysqli.default_socket =
-mysqli.default_host =
-mysqli.default_user =
-mysqli.default_pw =
-mysqli.reconnect = Off
+; mysqli.max_persistent = -1
+; mysqli.allow_persistent = On
+; mysqli.max_links = -1
+; mysqli.cache_size = 2000
+; mysqli.default_port = 3306
+; mysqli.default_socket =
+; mysqli.default_host =
+; mysqli.default_user =
+; mysqli.default_pw =
+; mysqli.reconnect = Off
 
 [mysqlnd]
-mysqlnd.collect_statistics = On
-mysqlnd.collect_memory_statistics = Off
+; mysqlnd.collect_statistics = On
+; mysqlnd.collect_memory_statistics = Off
+; mysqlnd.debug =
+; mysqlnd.log_mask = 0
+; mysqlnd.net_cmd_buffer_size = 2048
+; mysqlnd.net_read_buffer_size = 32768
+; mysqlnd.net_read_buffer_size = 32768
+; mysqlnd.net_read_buffer_size = 32768
 
 [PostgreSQL]
-pgsql.allow_persistent = On
-pgsql.auto_reset_persistent = Off
-pgsql.max_persistent = -1
-pgsql.max_links = -1
-pgsql.ignore_notice = 0
-pgsql.log_notice = 0
+; pgsql.allow_persistent = On
+; pgsql.auto_reset_persistent = Off
+; pgsql.max_persistent = -1
+; pgsql.max_links = -1
+; pgsql.ignore_notice = 0
+; pgsql.log_notice = 0
 
 [bcmath]
 bcmath.scale = 0
@@ -173,7 +186,9 @@ bcmath.scale = 0
 [Session]
 session.save_handler = {{ php_session_save_handler }}
 session.save_path = {{ php_session_save_path }}
+;session.use_strict_mode = 0
 session.use_cookies = 1
+;session.cookie_secure =
 session.use_only_cookies = 1
 session.name = PHPSESSID
 session.auto_start = 0
@@ -182,6 +197,7 @@ session.cookie_lifetime = {{ php_session_cookie_lifetime }}
 session.cookie_path = /
 session.cookie_domain =
 session.cookie_httponly =
+session.cookie_samesite =
 
 session.serialize_handler = php
 
@@ -197,6 +213,17 @@ session.cache_limiter = nocache
 session.cache_expire = {{ php_session_cache_expire }}
 
 session.use_trans_sid = 0
+session.sid_length = 26
+session.trans_sid_tags = "a=href,area=href,frame=src,form="
+;session.trans_sid_hosts=""
+session.sid_bits_per_character = 5
+;session.upload_progress.enabled = On
+;session.upload_progress.cleanup = On
+;session.upload_progress.prefix = "upload_progress_"
+;session.upload_progress.name = "PHP_SESSION_UPLOAD_PROGRESS"
+;session.upload_progress.freq =  "1%"
+;session.upload_progress.min_freq = "1"
+;session.lazy_write = On
 
 session.hash_function = 0
 session.hash_bits_per_character = 5
@@ -204,22 +231,26 @@ session.hash_bits_per_character = 5
 url_rewriter.tags = "a=href,area=href,frame=src,input=src,form=fakeentry"
 
 [MSSQL]
-mssql.allow_persistent = On
-mssql.max_persistent = -1
-mssql.max_links = -1
-mssql.min_error_severity = 10
-mssql.min_message_severity = 10
-mssql.compatability_mode = Off
-mssql.secure_connection = Off
+; mssql.allow_persistent = On
+; mssql.max_persistent = -1
+; mssql.max_links = -1
+; mssql.min_error_severity = 10
+; mssql.min_message_severity = 10
+; mssql.compatability_mode = Off
+; mssql.secure_connection = Off
 
 [Tidy]
+;tidy.default_config = /usr/local/lib/php/default.tcfg
 tidy.clean_output = Off
 
 [soap]
-soap.wsdl_cache_enabled=1
-soap.wsdl_cache_dir="/tmp"
-soap.wsdl_cache_ttl=86400
-soap.wsdl_cache_limit = 5
+; soap.wsdl_cache_enabled=1
+; soap.wsdl_cache_dir="/tmp"
+; soap.wsdl_cache_ttl=86400
+; soap.wsdl_cache_limit = 5
+
+[sysvshm]
+; sysvshm.init_mem = 10000
 
 [ldap]
-ldap.max_links = -1
+; ldap.max_links = -1
