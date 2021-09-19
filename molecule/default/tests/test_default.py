@@ -98,7 +98,7 @@ def test_installed_custom_package(host, get_vars):
         for pkg in custom_packages:
             package = pkg
 
-            if(distribution in ['redhat', 'centos', 'ol']):
+            if distribution in ['redhat', 'centos', 'ol']:
                 package_version = local_facts(host).get("version").get("package")
                 package = 'php{0}-{1}'.format(
                     package_version,
@@ -119,6 +119,8 @@ def test_directories(host, dirs, get_vars):
     """
     distribution = host.system_info.distribution
 
+    print(distribution)
+
     package_version = local_facts(host).get("version").get("full")
     directories = [
         "/etc/php/{}/cli",
@@ -132,12 +134,20 @@ def test_directories(host, dirs, get_vars):
             "/etc/php{0}/mods-available",
             "/etc/php{0}/php-fpm.d"
         ]
+    if distribution in ['redhat', 'centos', 'ol']:
+        directories = [
+            "/etc/php/{}/php.d",
+            "/etc/php/{}/php-fpm.d"
+        ]
 
     for dirs in directories:
         d = host.file(dirs.format(package_version))
         pp.pprint("directory: {0}".format(d))
 
-        assert d.is_directory
+        if distribution in ['redhat', 'centos', 'ol']:
+            assert d.exists
+        else:
+            assert d.is_directory
 
 
 def test_user(host, get_vars):
@@ -169,14 +179,16 @@ def test_fpm_pools(host, get_vars):
     for i in host.socket.get_listening_sockets():
         print(i)
 
-    daemon = local_facts(host).get("daemon")
-
     for pool in get_vars.get("php_fpm_pools"):
         name = pool.get("name")
         listen = pool.get("listen")
-        listen = listen.replace('//', "/{}/".format(daemon))
+        # listen = listen.replace('//', "/{}/".format(daemon))
+
+        local_facts(host).get("socket_directory"),
 
         socket_name = listen.replace('$pool', name)
+
+        print(socket_name)
 
         assert host.file(socket_name).exists
         assert host.socket("unix://{0}".format(socket_name)).is_listening

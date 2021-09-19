@@ -10,7 +10,7 @@ php_fpm_pools:
     group: "{{ php_fpm_pool_group }}"
     listen.owner: "{{ php_fpm_pool_user }}"
     listen.group: "{{ php_fpm_pool_group }}"
-    listen: "/run/{{ php_fpm_daemon }}/$pool.sock"
+    listen: "{{ php_fpm_socket_directory }}/$pool.sock"
     # static, dynamic or ondemand
     pm: dynamic
     pm.max_children: 10

@@ -16,7 +16,6 @@ php_packages:
   - php-mysql
   - php-mbstring
   - php-memcached
-  - php-db
 
 php_conf_paths:
   - /etc/php/{{ php_version }}/fpm
