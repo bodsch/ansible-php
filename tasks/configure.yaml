@@ -81,7 +81,7 @@
         state: directory
         owner: root
         group: root
-        mode: 0750
+        mode: 0755
       when:
         - php_modules_conf_paths is defined
 
