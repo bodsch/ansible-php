@@ -176,7 +176,6 @@ class PHPVersion(object):
 
         pattern = re.compile(r'^(?P<repository>extra|world)\/php7[\w -](?P<version>\d\.\d).*-.*', re.MULTILINE)
 
-        results = []
         args = []
         args.append("--noconfirm")
         args.append("--sync")
