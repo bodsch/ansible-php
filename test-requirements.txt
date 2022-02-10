@@ -1,12 +1,11 @@
 molecule
 molecule-docker
-molecule-podman
 docker
 ansible-lint
 yamllint
 flake8
 jmespath
-pytest
-pytest-testinfra
+# pytest==6.2.5
+pytest-testinfra==6.4.0
 tox
 tox-gh-actions

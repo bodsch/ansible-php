@@ -19,6 +19,20 @@
       skip: true
 
 - block:
+    - name: make sure python3-apt is installed (only debian based)
+      package:
+        name:
+          - python3-apt
+        state: present
+
+    - name: clean apt cache
+      command: apt-get clean
+      args:
+        warn: false
+  when:
+    - ansible_os_family | lower == 'debian'
+
+- block:
     # RPM-GPG-KEY-remi2018: the GnuPG public key of the key pair used to sign my packages (Fedora 28-29 and EL-8)
     # RPM-GPG-KEY-remi2017: the GnuPG public key of the key pair used to sign my packages (Fedora 26-27)
     # RPM-GPG-KEY-remi    : the GnuPG public key of the key pair used to sign my packages (Fedora <= 25 and EL <= 7)
