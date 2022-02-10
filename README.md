@@ -3,7 +3,7 @@
 
 Ansible role to install fpm-php on various systems.
 
-Inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
+Only inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
 
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/bodsch/ansible-php/CI)][ci]
@@ -20,14 +20,16 @@ Inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
 ### Operating systems
 
 Tested on
-
-* Debian 9 / 10
-* Ubuntu 18.04 / 20.04
-* CentOS 7 / 8
-* OracleLinux 7 / 8
 * ArchLinux
 * ArtixLinux
-
+* Debian based
+    - Debian 9 / 10 / 11
+    - Ubuntu 18.04 / 20.04
+* RedHat based
+    - CentOS 8 (**not longer supported**)
+    - Alma Linux 8
+    - Rocky Linux 8
+    - OracleLinux 8
 
 ## usage
 
@@ -197,3 +199,15 @@ php_modules:
 ```
 
 Under [documentation](documentation) you can find some module configurations that have been copied from php.ini.
+
+---
+
+## Author
+
+- Bodo Schulz
+
+## License
+
+[Apache](LICENSE)
+
+`FREE SOFTWARE, HELL YEAH!`
