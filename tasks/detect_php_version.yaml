@@ -2,7 +2,7 @@
 
 - name: detect available php version
   php_version:
-    package_version: "{{ php_redhat_version }}"
+    package_version: "{{ php_version }}"
   register: detected_php_version
 
 - name: "set php_version '{{ detected_php_version.available.version }}'"
@@ -16,6 +16,13 @@
     - detected_php_version.available.version is defined
     - detected_php_version.available.package_version is defined
     - detected_php_version.available.major_version is defined
+
+- name: "unset php_major_version for PHP 8"
+  set_fact:
+    php_major_version: ""
+  when:
+    - ansible_distribution | lower == 'archlinux'
+    - php_major_version | int == 8
 
 - name: do facts module to get latest information
   setup:
@@ -37,5 +44,9 @@
         - "{{ ansible_os_family | lower }}.yaml"
         - default.yaml
       skip: true
+
+- name: debug
+  debug:
+    msg: "{{ php_packages }}"
 
 ...

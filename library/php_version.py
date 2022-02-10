@@ -174,7 +174,7 @@ class PHPVersion(object):
         """
         self.module.log(msg="= {function_name}()".format(function_name="_search_pacman"))
 
-        pattern = re.compile(r'^(?P<repository>extra|world)\/php7[\w -](?P<version>\d\.\d).*-.*', re.MULTILINE)
+        pattern = re.compile(r'^(?P<repository>extra|world)\/php\d?[ ](?P<version>\d\.\d).*-.*', re.MULTILINE)
 
         results = []
         args = []
@@ -185,10 +185,29 @@ class PHPVersion(object):
 
         rc, out, err = self._pacman(args)
 
-        version = re.search(pattern, out)
+        version = re.findall(pattern, out)
+        versions = []
 
         if version:
-            return False, version.group('version'), ""
+            if len(version) == 1:
+                return False, version[0].group('version'), ""
+            else:
+                v = ""
+                for _, v in version:
+                    versions.append(v)
+
+                    if v.startswith(self.package_version) or v == self.package_version:
+                         break
+                    else:
+                        v = None
+
+                if v is None and len(versions) == 0:
+                    return True, "", "not found"
+                elif v is None and len(versions) != 0:
+                    return True, "", "you want version {}, but i found versions {}".format(self.package_version, versions)
+                else:
+                    return False, v, ""
+
         else:
             return True, "", "not found"
 
