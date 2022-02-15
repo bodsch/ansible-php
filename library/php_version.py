@@ -49,7 +49,7 @@ class PHPVersion(object):
         if self.distribution.lower() in ["debian", "ubuntu"]:
             error, version, msg = self._search_apt()
 
-        if self.distribution.lower() in ["centos", "oracle", "redhat", "fedora"]:
+        if self.distribution.lower() in ["redhat", "centos", "oracle", "fedora", "rocky", "almalinux"]:
             error, version, msg = self._search_yum()
 
         if self.distribution.lower() in ["arch", "artix"]:
@@ -91,17 +91,32 @@ class PHPVersion(object):
 
         pkg = cache['php']
 
-        # module.log(msg="pkg       : {}".format(pkg))
-        # module.log(msg="installed : {}".format(pkg.is_installed))
-        # module.log(msg="shortname : {}".format(pkg.shortname))
+        self.module.log(msg="pkg       : {}".format(pkg))
+        self.module.log(msg="installed : {}".format(pkg.is_installed))
+        self.module.log(msg="shortname : {}".format(pkg.shortname))
+        self.module.log(msg="versions  : {}".format(pkg.versions))
 
         if(pkg):
-            pkg_version = pkg.versions[0]
-            version = pkg_version.version
-            pattern = re.compile(r'^\d:(?P<version>\d.+)\+.*')
-            result = re.search(pattern, version)
+            pattern = re.compile(r'^\d:(?P<version>[0-9.]+)\+.*')
 
-            version = result.group(1)
+            for pkg_version in pkg.versions:
+                _version = pkg_version.version
+                self.module.log(msg=" - version  : {} {}".format(_version, type(_version)))
+
+                result = re.search(pattern, _version)
+                version = result.group(1)
+
+                self.module.log(msg=" - version  : {} {}".format(version, type(version)))
+
+                if version.startswith(self.package_version):
+                    break
+                else:
+                    version = ''
+
+        self.module.log(msg="version  : {}".format(version))
+
+        if version == '':
+            return True, '', "no php version {} found".format(self.package_version)
 
         return False, version, ''
 
@@ -174,7 +189,10 @@ class PHPVersion(object):
         """
         self.module.log(msg="= {function_name}()".format(function_name="_search_pacman"))
 
-        pattern = re.compile(r'^(?P<repository>extra|world)\/php\d?[ ](?P<version>\d\.\d).*-.*', re.MULTILINE)
+        # match to
+        #  extra/php 8.1.2-1
+        #  extra/php7 7.4.27-1
+        pattern = re.compile(r'^(?P<repository>extra|world)\/php[0-9 ]+(?P<version>\d\.\d).*-.*', re.MULTILINE)
 
         results = []
         args = []
@@ -197,7 +215,7 @@ class PHPVersion(object):
                     versions.append(v)
 
                     if v.startswith(self.package_version) or v == self.package_version:
-                         break
+                        break
                     else:
                         v = None
 

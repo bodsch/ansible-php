@@ -45,8 +45,8 @@
         - default.yaml
       skip: true
 
-- name: debug
-  debug:
-    msg: "{{ php_packages }}"
+# - name: debug
+#   debug:
+#     msg: "{{ php_packages }}"
 
 ...

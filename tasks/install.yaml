@@ -1,5 +1,13 @@
 ---
 
+- name: add php version to various php packages
+  set_fact:
+    php_packages: "{{ php_packages | add_php_version(php_version) }}"
+
+  when:
+    - ansible_os_family | lower == "debian"
+    - php_major_version | int == 8
+
 - name: ensure PHP packages are installed.
   package:
     name: "{{ php_packages }}"
@@ -7,7 +15,8 @@
 
 - name: add php version to custom package list
   set_fact:
-    php_custom_packages: "{{ php_custom_packages | map('string_postfix', 'php' ~ php_package_version ~ '-' ) | list }}"
+    php_custom_packages: "{{ php_custom_packages |
+      map('string_postfix', 'php' ~ php_package_version ~ '-' ) | list }}"
   when:
     - ansible_os_family | lower == 'redhat'
 

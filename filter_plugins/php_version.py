@@ -28,7 +28,7 @@ class FilterModule(object):
 
         for i in data:
             if i in ["php-opcache"]:
-                packages.append(i.replace("php", "php{}".format(version)) )
+                packages.append(i.replace("php", "php{}".format(version)))
             else:
                 packages.append(i)
 

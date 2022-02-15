@@ -18,6 +18,9 @@ php_packages:
   - php{{ php_package_version }}-php-xmlrpc
   - php{{ php_package_version }}-php-opcache
 
+php_dependencies:
+  - iproute
+
 php_conf_paths:
   - /etc/php/{{ php_version }}/php.d
 

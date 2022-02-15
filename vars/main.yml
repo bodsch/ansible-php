@@ -4,6 +4,9 @@ systemd_lib_directory: ""
 
 php_packages: []
 
+php_dependencies:
+  - iproute2
+
 php_conf_paths: []
 
 php_extension_conf_paths: []

@@ -1,11 +1,16 @@
 ---
 
+# choose your version!
+# debian based use simple the major version: 7 or 8
+# redhat based should use the major und the minor version: 7.3 or 8.1
+php_version: "8"
+
 # Pass in a comma-separated list of repos to use (e.g. "remi,epel"). Used only
 # for RHEL/CentOS.
 # php_enablerepo: ""
 
 # use version without dot:
-php_redhat_version: "7.3"
+# php_redhat_version: "7.3"
 
 # PHP package state; use 'present' to make sure it's installed, or 'latest' if
 # you want to upgrade or switch versions using a new repo.

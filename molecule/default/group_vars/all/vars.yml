@@ -1,5 +1,7 @@
 ---
 
+php_version: "7.3"
+
 # php_custom_packages:
 #   - php-ldap
 #   - php-imap
