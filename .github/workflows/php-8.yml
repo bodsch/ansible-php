@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - master
-      - feature/*
   schedule:
     #        ┌───────────── minute (0 - 59)
     #        │ ┌───────────── hour (0 - 23)
