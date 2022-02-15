@@ -1,34 +1,21 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
 from ansible.parsing.dataloader import DataLoader
 from ansible.template import Templar
-
 import pytest
 import os
-import json
-
 import testinfra.utils.ansible_runner
 
-HOST = 'instance'
+import pprint
+pp = pprint.PrettyPrinter()
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
-    os.environ['MOLECULE_INVENTORY_FILE']).get_hosts(HOST)
-
-
-def pp_json(json_thing, sort=True, indents=2):
-    if type(json_thing) is str:
-        print(json.dumps(json.loads(json_thing), sort_keys=sort, indent=indents))
-    else:
-        print(json.dumps(json_thing, sort_keys=sort, indent=indents))
-    return None
+    os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
 
 def base_directory():
-    """
-        get molecule directories
-    """
+    """ ... """
     cwd = os.getcwd()
 
     if('group_vars' in os.listdir(cwd)):
@@ -36,7 +23,7 @@ def base_directory():
         molecule_directory = "."
     else:
         directory = "."
-        molecule_directory = "molecule/{0}".format(os.environ.get('MOLECULE_SCENARIO_NAME'))
+        molecule_directory = "molecule/{}".format(os.environ.get('MOLECULE_SCENARIO_NAME'))
 
     return directory, molecule_directory
 
@@ -114,9 +101,9 @@ def test_installed_package(host, get_vars):
     package = 'php-fpm'
     distribution = host.system_info.distribution
 
-    print(distribution)
+    pp.pprint(distribution)
 
-    if(distribution in ['redhat', 'centos', 'ol']):
+    if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
         package_version = local_facts(host).get("version").get("package")
         package = 'php{0}-php-fpm'.format(package_version)
 
@@ -140,7 +127,7 @@ def test_installed_custom_package(host, get_vars):
         for pkg in custom_packages:
             package = pkg
 
-            if distribution in ['redhat', 'centos', 'ol']:
+            if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
                 package_version = local_facts(host).get("version").get("package")
                 package = 'php{0}-{1}'.format(
                     package_version,
@@ -176,7 +163,7 @@ def test_directories(host, dirs, get_vars):
             "/etc/php{0}/mods-available",
             "/etc/php{0}/php-fpm.d"
         ]
-    if distribution in ['redhat', 'centos', 'ol']:
+    if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
         directories = [
             "/etc/php/{}/php.d",
             "/etc/php/{}/php-fpm.d"
@@ -184,9 +171,9 @@ def test_directories(host, dirs, get_vars):
 
     for dirs in directories:
         d = host.file(dirs.format(package_version))
-        print("directory: {0}".format(d))
+        pp.pprint("directory: {0}".format(d))
 
-        if distribution in ['redhat', 'centos', 'ol']:
+        if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
             assert d.exists
         else:
             assert d.is_directory

@@ -1,3 +1,5 @@
+
+```bash
 [opcache]
 ; Determines if Zend OPCache is enabled
 ;opcache.enable=1
@@ -146,3 +148,4 @@
 
 ; Absolute path used to store shared lockfiles (for *nix only).
 ;opcache.lockfile_path=/tmp
+```

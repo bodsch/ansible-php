@@ -15,7 +15,7 @@ class FilterModule(object):
     def filters(self):
         return {
             'string_prefix': self.string_prefix,
-            'string_postfix': self.string_postfix
+            'string_postfix': self.string_postfix,
         }
 
     def string_prefix(self, prefix, s):

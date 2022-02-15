@@ -1,5 +1,5 @@
 ---
-name: CI
+name: PHP-8
 
 on:
   pull_request:
@@ -77,7 +77,7 @@ jobs:
       - name: test with tox
         run: |
           tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- \
-            molecule test
+            molecule test --scenario-name php-8
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -121,7 +121,7 @@ jobs:
       - name: test with tox
         run: |
           tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- \
-            molecule test
+            molecule test --scenario-name php-8
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -137,6 +137,8 @@ jobs:
       matrix:
         image:
           - oraclelinux:8
+          - rockylinux:8
+          - almalinux:8
         python-version:
           - '3.9'
         ansible-version:
@@ -162,7 +164,7 @@ jobs:
       - name: test with tox
         run: |
           tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- \
-            molecule test
+            molecule test --scenario-name php-8
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

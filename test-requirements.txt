@@ -2,10 +2,9 @@ molecule
 molecule-docker
 docker
 ansible-lint
-yamllint
 flake8
 jmespath
-# pytest==6.2.5
 pytest-testinfra==6.4.0
+pytest
 tox
 tox-gh-actions

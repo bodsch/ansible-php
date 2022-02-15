@@ -5,6 +5,10 @@ Ansible role to install fpm-php on various systems.
 
 Only inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
 
+Detect available PHP Version based on `php_version` Variable.
+
+Supports PHP7 and PHP8.
+
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/bodsch/ansible-php/CI)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-php)][issues]
@@ -20,6 +24,7 @@ Only inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
 ### Operating systems
 
 Tested on
+
 * ArchLinux
 * ArtixLinux
 * Debian based
@@ -34,7 +39,10 @@ Tested on
 ## usage
 
 ```
-php_redhat_version: "7.3"
+# choose your version!
+# debian based can use simple the major version: 7 or 8
+# redhat based should use the major und the minor version: 7.3 or 8.1
+php_version: "8"
 
 php_packages_state: present
 
