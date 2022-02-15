@@ -3,7 +3,7 @@
 
 Ansible role to install fpm-php on various systems.
 
-Inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
+Only inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
 
 Detect available PHP Version based on `php_version` Variable.
 
@@ -26,6 +26,7 @@ Supports PHP7 and PHP8.
 Tested on
 
 * ArchLinux
+* ArtixLinux
 * Debian based
     - Debian 10 / 11
     - Ubuntu 18.04 / 20.04
@@ -34,7 +35,6 @@ Tested on
     - Alma Linux 8
     - Rocky Linux 8
     - OracleLinux 8
-
 
 ## usage
 
@@ -207,3 +207,15 @@ php_modules:
 ```
 
 Under [documentation](documentation) you can find some module configurations that have been copied from php.ini.
+
+---
+
+## Author
+
+- Bodo Schulz
+
+## License
+
+[Apache](LICENSE)
+
+`FREE SOFTWARE, HELL YEAH!`

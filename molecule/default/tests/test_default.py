@@ -1,17 +1,28 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from ansible.parsing.dataloader import DataLoader
 from ansible.template import Templar
+
 import pytest
 import os
+import json
+
 import testinfra.utils.ansible_runner
 
-import pprint
-pp = pprint.PrettyPrinter()
+HOST = 'instance'
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
-    os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
+    os.environ['MOLECULE_INVENTORY_FILE']).get_hosts(HOST)
+
+
+def pp_json(json_thing, sort=True, indents=2):
+    if type(json_thing) is str:
+        print(json.dumps(json.loads(json_thing), sort_keys=sort, indent=indents))
+    else:
+        print(json.dumps(json_thing, sort_keys=sort, indent=indents))
+    return None
 
 
 def base_directory():
@@ -102,7 +113,7 @@ def test_installed_package(host, get_vars):
     package = 'php-fpm'
     distribution = host.system_info.distribution
 
-    pp.pprint(distribution)
+    print(distribution)
 
     if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
         package_version = local_facts(host).get("version").get("package")
@@ -172,7 +183,7 @@ def test_directories(host, dirs, get_vars):
 
     for dirs in directories:
         d = host.file(dirs.format(package_version))
-        pp.pprint("directory: {0}".format(d))
+        print("directory: {0}".format(d))
 
         if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
             assert d.exists
