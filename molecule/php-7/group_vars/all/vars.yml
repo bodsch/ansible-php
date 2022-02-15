@@ -1,6 +1,6 @@
 ---
 
-php_version: "{{ '7' if ansible_distribution | lower != 'redhat' else '7.3' }}"
+php_version: "{{ '7' if ansible_os_family | lower != 'redhat' else '7.3' }}"
 
 # php_custom_packages:
 #   - php-ldap
