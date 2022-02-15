@@ -27,7 +27,7 @@ Tested on
 
 * ArchLinux
 * Debian based
-    - Debian 9 / 10 / 11
+    - Debian 10 / 11
     - Ubuntu 18.04 / 20.04
 * RedHat based
     - CentOS 8 (**not longer supported**)

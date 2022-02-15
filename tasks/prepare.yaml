@@ -18,6 +18,13 @@
         - default.yaml
       skip: true
 
+- name: assert missing defined php version
+  assert:
+    that:
+      - php_version | int not in ["7", "8"]
+    msg: php version is missing or wrong major version
+    quiet: true
+
 - block:
     - name: make sure python3-apt is installed (only debian based)
       package:

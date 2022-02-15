@@ -1,3 +1,5 @@
+
+```bash
 [MySQLi]
 
 ; Maximum number of persistent links.  -1 means no limit.
@@ -47,3 +49,4 @@ mysqli.default_pw =
 
 ; Allow or prevent reconnect
 mysqli.reconnect = Off
+```
