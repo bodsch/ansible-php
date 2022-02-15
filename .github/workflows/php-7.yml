@@ -78,7 +78,7 @@ jobs:
       - name: test with tox
         run: |
           tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- \
-            molecule test
+            molecule test --scenario-name php-7
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -122,7 +122,7 @@ jobs:
       - name: test with tox
         run: |
           tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- \
-            molecule test
+            molecule test --scenario-name php-7
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -165,7 +165,7 @@ jobs:
       - name: test with tox
         run: |
           tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- \
-            molecule test
+            molecule test --scenario-name php-7
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
