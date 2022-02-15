@@ -1,0 +1,79 @@
+---
+
+- block:
+    # RPM-GPG-KEY-remi2018: the GnuPG public key of the key pair used to sign my packages (Fedora 28-29 and EL-8)
+    # RPM-GPG-KEY-remi2017: the GnuPG public key of the key pair used to sign my packages (Fedora 26-27)
+    # RPM-GPG-KEY-remi    : the GnuPG public key of the key pair used to sign my packages (Fedora <= 25 and EL <= 7)
+    - name: import remi2018 GPG key.
+      rpm_key:
+        key: https://rpms.remirepo.net/RPM-GPG-KEY-remi2018
+        state: present
+      when:
+        - ansible_distribution_major_version | int >= 8
+
+    - name: import remi GPG key.
+      rpm_key:
+        key: http://rpms.remirepo.net/RPM-GPG-KEY-remi
+        state: present
+      when:
+        - ansible_distribution_major_version | int <= 7
+
+    - name: import EPEL GPG key.
+      rpm_key:
+        key: https://archive.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
+        state: present
+
+    - name: install EPEL repository
+      yum_repository:
+        name: epel
+        state: present
+        description: Extra Packages for Enterprise Linux {{ ansible_distribution_major_version }} - $basearch
+        baseurl: http://download.fedoraproject.org/pub/epel/{{ ansible_distribution_major_version }}/$basearch
+        gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
+        metalink: https://mirrors.fedoraproject.org/metalink?repo=epel-{{ ansible_distribution_major_version }}&arch=$basearch&infra=$infra&content=$contentdir
+        failovermethod: priority
+        gpgcheck: 1
+        enabled: 1
+
+    - name: install remi repository
+      package:
+        name: http://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm
+        state: present
+
+    # https://bugs.centos.org/view.php?id=16604
+    - name: activate PowerTools repository
+      template:
+        src: yum.repos.d/CentOS-Linux-PowerTools.repo.j2
+        dest: /etc/yum.repos.d/CentOS-Linux-PowerTools.repo
+        mode: 0644
+      when:
+        - ansible_os_family | lower == 'redhat'
+        - not ansible_distribution | lower == "oraclelinux"
+        - ansible_distribution_version | int >= 8
+  when:
+    - ansible_os_family | lower == 'redhat'
+
+- block:
+    - name: add apt signing key (debian)
+      become: true
+      apt_key:
+        id: 15058500A0235D97F5D10063B188E2B695BD4743
+        url: https://packages.sury.org/php/apt.gpg
+
+    - name: create sury-php source list
+      template:
+        src: apt/sources.list.d/debian-sury-php.list.j2
+        dest: /etc/apt/sources.list.d/debian-sury-php.list
+        mode: 0644
+
+    # - name: ubuntu
+
+  when:
+    - ansible_os_family | lower == 'debian'
+    - php_version | int == 8
+
+- name: update package cache
+  package:
+    update_cache: true
+
+...
