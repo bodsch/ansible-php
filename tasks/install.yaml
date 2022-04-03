@@ -1,5 +1,6 @@
 ---
 
+# move from filter to library
 - name: add php version to various php packages
   set_fact:
     php_packages: "{{ php_packages | add_php_version(php_version) }}"
