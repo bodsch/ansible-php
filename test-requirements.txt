@@ -1,7 +1,7 @@
-molecule
-molecule-docker
+ansible-lint==5.4.0
+molecule==3.4.0
+molecule-docker==0.2.4
 docker
-ansible-lint
 flake8
 jmespath
 pytest-testinfra==6.4.0
