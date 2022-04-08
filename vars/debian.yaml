@@ -17,6 +17,10 @@ php_packages:
   - php-mbstring
   - php-memcached
 
+php_dependencies:
+  - iproute2
+  - gnupg
+
 php_conf_paths:
   - /etc/php/{{ php_version }}/fpm
   - /etc/php/{{ php_version }}/cli
