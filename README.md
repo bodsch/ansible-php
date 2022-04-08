@@ -29,16 +29,15 @@ Tested on
 * ArtixLinux
 * Debian based
     - Debian 10 / 11
-    - Ubuntu 18.04 / 20.04
+    - Ubuntu 20.04
 * RedHat based
-    - CentOS 8 (**not longer supported**)
     - Alma Linux 8
     - Rocky Linux 8
     - OracleLinux 8
 
 ## usage
 
-```
+```yaml
 # choose your version!
 # debian based can use simple the major version: 7 or 8
 # redhat based should use the major und the minor version: 7.3 or 8.1
@@ -115,7 +114,7 @@ To install more PHP packages, you can find a list at `php_custom_packages` speci
 
 E.G.:
 
-```
+```yaml
 php_custom_packages:
   - php-ldap
 ```
@@ -128,7 +127,7 @@ As an example, `php-ldap` would be `php73-php-ldap`.
 
 ### php pools
 
-```
+```yaml
 php_fpm_pools:
   - name: worker-01
     user: "{{ php_fpm_pool_user }}"
@@ -174,7 +173,7 @@ php_fpm_pools:
 
 ### php modules
 
-```
+```yaml
 php_modules:
   # gd
   - name: gd

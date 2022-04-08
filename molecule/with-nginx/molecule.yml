@@ -13,7 +13,7 @@ lint: |
 
 platforms:
   - name: instance
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian10}-ansible:latest"
+    image: "bodsch/ansible-${DISTRIBUTION:-debian:11}"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -27,13 +27,10 @@ provisioner:
     # - -vv
   config_options:
     defaults:
-      ansible_managed: "Ansible managed: {file} modified on %Y-%m-%d %H:%M:%S by {uid} on {host}"
+      # ansible_managed: "Ansible managed: {file} modified on %Y-%m-%d %H:%M:%S by {uid} on {host}"
       deprecation_warnings: True
       stdout_callback: yaml
-      #error_on_undefined_vars: False
-      #system_warnings: True
-      #display_args_to_stdout: True
-      #command_warnings: False
+      callbacks_enabled: profile_tasks
 
 scenario:
   test_sequence:

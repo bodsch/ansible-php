@@ -5,7 +5,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
   schedule:
     #        ┌───────────── minute (0 - 59)
     #        │ ┌───────────── hour (0 - 23)
@@ -94,7 +94,6 @@ jobs:
         image:
           - debian:10
           - debian:11
-          - ubuntu:18.04
           - ubuntu:20.04
         python-version:
           - '3.9'
@@ -171,7 +170,7 @@ jobs:
           DISTRIBUTION: ${{ matrix.image }}
 
   publish:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     needs:
       - arch
       - deb
@@ -182,4 +181,4 @@ jobs:
         uses: robertdebock/galaxy-action@1.2.0
         with:
           galaxy_api_key: ${{ secrets.galaxy_api_key }}
-          git_branch: master
+          git_branch: main
