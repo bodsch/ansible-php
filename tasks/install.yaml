@@ -25,6 +25,8 @@
   package:
     name: "{{ php_custom_packages }}"
     state: "{{ php_packages_state }}"
+  when:
+    - php_custom_packages | default([]) | count > 0
 
 - block:
     - name: create PHP directory under /etc

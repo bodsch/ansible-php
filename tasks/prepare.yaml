@@ -51,6 +51,8 @@
   package:
     name: "{{ php_dependencies }}"
     state: present
+  when:
+    - php_dependencies | default([]) | count > 0
 
 - name: repositories
   include_tasks: repositories.yaml
