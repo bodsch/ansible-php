@@ -1,6 +1,8 @@
 ---
 
-- block:
+- name: redhat based
+  become: true
+  block:
     # RPM-GPG-KEY-remi2018: the GnuPG public key of the key pair used to sign my packages (Fedora 28-29 and EL-8)
     # RPM-GPG-KEY-remi2017: the GnuPG public key of the key pair used to sign my packages (Fedora 26-27)
     # RPM-GPG-KEY-remi    : the GnuPG public key of the key pair used to sign my packages (Fedora <= 25 and EL <= 7)
@@ -39,25 +41,15 @@
       package:
         name: http://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm
         state: present
-
-    # # https://bugs.centos.org/view.php?id=16604
-    # - name: activate PowerTools repository
-    #   template:
-    #     src: yum.repos.d/CentOS-Linux-PowerTools.repo.j2
-    #     dest: /etc/yum.repos.d/CentOS-Linux-PowerTools.repo
-    #     mode: 0644
-    #   when:
-    #     - ansible_os_family | lower == 'redhat'
-    #     - not ansible_distribution | lower == "oraclelinux"
-    #     - ansible_distribution_version | int >= 8
   when:
     - ansible_os_family | lower == 'redhat'
 
-- block:
+- name: debian based
+  become: true
+  block:
     - name: debian
       block:
         - name: add apt signing key (debian)
-          become: true
           apt_key:
             id: 15058500A0235D97F5D10063B188E2B695BD4743
             url: https://packages.sury.org/php/apt.gpg
@@ -75,15 +67,15 @@
         - name: add php repository from PPA
           ansible.builtin.apt_repository:
             repo: ppa:ondrej/php
-
+            codename: "{{ ansible_distribution_release }}"
       when:
         ansible_distribution | lower == "ubuntu"
-
   when:
     - ansible_os_family | lower == 'debian'
     - php_version | int == 8
 
 - name: update package cache
+  become: true
   package:
     update_cache: true
 
