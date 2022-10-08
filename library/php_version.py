@@ -42,9 +42,9 @@ class PHPVersion(object):
 
         version = ''
         error = True
-        msg = "not supported distribution: {}".format(self.distribution)
+        msg = f"not supported distribution: {self.distribution}."
 
-        self.module.log(msg="  distribution : '{}'".format(self.distribution))
+        self.module.log(msg=f"  distribution : '{self.distribution}'.")
 
         if self.distribution.lower() in ["debian", "ubuntu"]:
             error, version, msg = self._search_apt()
@@ -96,27 +96,27 @@ class PHPVersion(object):
         self.module.log(msg="shortname : {}".format(pkg.shortname))
         self.module.log(msg="versions  : {}".format(pkg.versions))
 
-        if(pkg):
+        if (pkg):
             pattern = re.compile(r'^\d:(?P<version>[0-9.]+)\+.*')
 
             for pkg_version in pkg.versions:
                 _version = pkg_version.version
-                self.module.log(msg=" - version  : {} {}".format(_version, type(_version)))
+                self.module.log(msg=f" - version  : {_version} {type(_version)}")
 
                 result = re.search(pattern, _version)
                 version = result.group(1)
 
-                self.module.log(msg=" - version  : {} {}".format(version, type(version)))
+                self.module.log(msg=f" - version  : {version} {type(version)}")
 
                 if version.startswith(self.package_version):
                     break
                 else:
                     version = ''
 
-        self.module.log(msg="version  : {}".format(version))
+        self.module.log(msg=f"version  : {version}")
 
         if version == '':
-            return True, '', "no php version {} found".format(self.package_version)
+            return True, '', f"no php version {self.package_version} found."
 
         return False, version, ''
 
@@ -132,26 +132,26 @@ class PHPVersion(object):
 
         package_version = self.package_version
 
-        if(package_version):
+        if (package_version):
             package_version = package_version.replace('.', '')
 
         package_mgr = self.module.get_bin_path('yum', False)
 
-        if(not package_mgr):
+        if (not package_mgr):
             package_mgr = self.module.get_bin_path('dnf', True)
 
-        if(not package_mgr):
+        if (not package_mgr):
             return True, "", "no valid package manager (yum or dnf) found"
 
         self.module.log(msg="  '{0}'".format(package_mgr))
 
         rc, out, err = self.module.run_command(
-            [package_mgr, "info", "php{}*common".format(package_version)],
+            [package_mgr, "info", f"php{package_version}*common"],
             check_rc=False)
 
         version = ''
 
-        if(rc == 0):
+        if (rc == 0):
             versions = []
 
             for line in out.splitlines():
@@ -160,18 +160,18 @@ class PHPVersion(object):
                     result = re.search(pattern, line)
                     versions.append(result.group('version'))
 
-            self.module.log(msg="versions      : '{0}'".format(versions))
+            self.module.log(msg=f"versions      : '{versions}'")
 
-            if(len(versions) == 0):
+            if len(versions) == 0:
                 msg = 'nothing found'
                 error = True
 
-            if(len(versions) == 1):
+            if len(versions) == 1:
                 msg = ''
                 error = False
                 version = versions[0]
 
-            if(len(versions) > 1):
+            if len(versions) > 1:
                 msg = 'more then one result found! choose one of them!'
                 error = True
                 version = ', '.join(versions)
@@ -221,7 +221,7 @@ class PHPVersion(object):
                 if v is None and len(versions) == 0:
                     return True, "", "not found"
                 elif v is None and len(versions) != 0:
-                    return True, "", "you want version {}, but i found versions {}".format(self.package_version, versions)
+                    return True, "", f"you want version {self.package_version}, but i found versions {versions}."
                 else:
                     return False, v, ""
 
@@ -232,7 +232,7 @@ class PHPVersion(object):
         '''   '''
         cmd = [self.pacman_bin] + args
 
-        self.module.log(msg="cmd: {}".format(cmd))
+        # self.module.log(msg="cmd: {}".format(cmd))
 
         rc, out, err = self.module.run_command(cmd, check_rc=True)
         # self.module.log(msg="  rc : '{}'".format(rc))
@@ -256,7 +256,7 @@ def main():
     helper = PHPVersion(module)
     result = helper.run()
 
-    module.log(msg="  result : '{}'".format(result))
+    module.log(msg=f" = result : '{result}'")
 
     module.exit_json(**result)
 
