@@ -13,6 +13,8 @@ php_fpm_log_directory: /var/log/php-fpm
 php_fpm_tmp_upload_directory: /tmp/php-fpm
 php_fpm_socket_directory: /run/php
 
+php_fpm_global: {}
+
 # Possible Values: alert, error, warning, notice, debug
 php_fpm_log_level: notice
 

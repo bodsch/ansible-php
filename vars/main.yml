@@ -11,6 +11,92 @@ php_conf_paths: []
 
 php_extension_conf_paths: []
 
+php_fpm_defaults_global:
+  pid: "{{ php_fpm_socket_directory }}/php-fpm.pid"
+  error_log: "{{ php_fpm_log_directory }}/error.log"
+  syslog:
+    facility: ""  # daemon
+    ident: ""     # php-fpm
+  log:
+    level: notice
+    limit: ""         # 4096
+    buffering: false  # no
+  emergency_restart:
+    threshold: ""     # 0
+    interval: ""      # 0
+  process:
+    control_timeout: ""  # 0
+    max: ""  # 128
+    priority: ""  # -19
+  daemonize: ""  # yes
+  rlimit:
+    files: ""  # 1024
+    core: ""  # 0
+  events:
+    mechanism: ""  # epoll
+  systemd_interval: ""  # 10
+
+php_fpm_defaults_ini:
+
+  Session:
+    save_handler: "{{ php_session_save_handler }}"
+    save_path: "{{ php_session_save_path }}"
+    # use_strict_mode: 0
+    use_cookies: 1
+    # cookie_secure =
+    use_only_cookies: 1
+    name: PHPSESSID
+    auto_start: 0
+    cookie_lifetime: "{{ php_session_cookie_lifetime }}"
+    cookie_path: /
+    cookie_domain: ""
+    cookie_httponly: ""
+    cookie_samesite: ""
+    serialize_handler: php
+    gc_probability: "{{ php_session_gc_probability }}"
+    gc_divisor: "{{ php_session_gc_divisor }}"
+    gc_maxlifetime: "{{ php_session_gc_maxlifetime }}"
+    bug_compat_42: Off
+    bug_compat_warn: Off
+    referer_check: ""
+    cache_limiter: nocache
+    cache_expire: "{{ php_session_cache_expire }}"
+    use_trans_sid: 0
+    sid_length: 26
+    trans_sid_tags: "a=href,area=href,frame=src,form="
+    # trans_sid_hosts: ""
+    sid_bits_per_character: 5
+    # upload_progress.enabled: On
+    # upload_progress.cleanup: On
+    # upload_progress.prefix: "upload_progress_"
+    # upload_progress.name: "PHP_SESSION_UPLOAD_PROGRESS"
+    # upload_progress.freq:  "1%"
+    # upload_progress.min_freq: "1"
+    # lazy_write: On
+    session.hash_function: 0
+    session.hash_bits_per_character: 5
+
+  MSSQL:
+    allow_persistent: ""      # On
+    max_persistent: ""        # -1
+    max_links: ""             # -1
+    min_error_severity: ""    # 10
+    min_message_severity: ""  # 10
+    compatability_mode: ""    # Off
+    secure_connection: ""     # Off
+  Tidy:
+    default_config: ""      # /usr/local/lib/php/default.tcfg
+    clean_output: ""        # Off
+  soap:
+    wsdl_cache_enabled: ""  # 1
+    wsdl_cache_dir: ""      # "/tmp"
+    wsdl_cache_ttl: ""      # 86400
+    wsdl_cache_limit: ""    # 5
+  sysvshm:
+    init_mem: ""    # 10000
+  ldap:
+    max_links: ""   # -1
+
 php_fpm_daemon: ""
 
 php_fpm_pool_user_default: ""

@@ -6,7 +6,7 @@
   register: detected_php_version
 
 - name: "set php_version '{{ detected_php_version.available.version }}'"
-  set_fact:
+  ansible.builtin.set_fact:
     php_version: "{{ detected_php_version.available.version }}"
     php_package_version: "{{ detected_php_version.available.package_version }}"
     php_major_version: "{{ detected_php_version.available.major_version }}"
@@ -18,17 +18,17 @@
     - detected_php_version.available.major_version is defined
 
 - name: "unset php_major_version for PHP 8"
-  set_fact:
+  ansible.builtin.set_fact:
     php_major_version: ""
   when:
     - ansible_distribution | lower == 'archlinux'
     - php_major_version | int == 8
 
 - name: do facts module to get latest information
-  setup:
+  ansible.builtin.setup:
 
 - name: re-include OS specific configuration
-  include_vars: "{{ lookup('first_found', params) }}"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
       paths:

@@ -9,15 +9,15 @@ Detect available PHP Version based on `php_version` Variable.
 
 Supports PHP7 and PHP8.
 
-
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/bodsch/ansible-php/CI)][ci]
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-php/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-php)][issues]
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-php)][releases]
+[![Ansible Quality Score](https://img.shields.io/ansible/quality/50067?label=role%20quality)][quality]
 
 [ci]: https://github.com/bodsch/ansible-php/actions
 [issues]: https://github.com/bodsch/ansible-php/issues?q=is%3Aopen+is%3Aissue
 [releases]: https://github.com/bodsch/ansible-php/releases
-
+[quality]: https://galaxy.ansible.com/bodsch/php
 
 ## Requirements & Dependencies
 
@@ -208,6 +208,17 @@ php_modules:
 Under [documentation](documentation) you can find some module configurations that have been copied from php.ini.
 
 ---
+
+## Contribution
+
+Please read [Contribution](CONTRIBUTING.md)
+
+## Development,  Branches (Git Tags)
+
+The `master` Branch is my *Working Horse* includes the "latest, hot shit" and can be complete broken!
+
+If you want to use something stable, please use a [Tagged Version](https://gitlab.com/bodsch/ansible-php/-/tags)!
+
 
 ## Author
 

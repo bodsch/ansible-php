@@ -1,7 +1,7 @@
 ---
 
 - name: ensure configuration directories exist
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0755
@@ -11,13 +11,13 @@
     - "{{ php_extension_conf_paths }}"
 
 - name: ensure log directory exist
-  file:
+  ansible.builtin.file:
     path: "{{ php_fpm_log_directory }}"
     state: directory
     mode: 0755
 
 - name: ensure temp directory for upload exist
-  file:
+  ansible.builtin.file:
     path: "{{ php_fpm_tmp_upload_directory }}"
     state: directory
     owner: "{{ php_fpm_pool_user }}"
@@ -25,7 +25,7 @@
     mode: 0755
 
 - name: ensure socket directory exist
-  file:
+  ansible.builtin.file:
     path: "{{ php_fpm_socket_directory }}"
     state: directory
     owner: "{{ php_fpm_pool_user }}"
@@ -33,7 +33,7 @@
     mode: 0755
 
 - name: create php.ini configuration file
-  template:
+  ansible.builtin.template:
     src: php.ini.j2
     dest: "{{ item }}/php.ini"
     owner: root
@@ -48,12 +48,12 @@
     - php_use_managed_ini | bool
 
 - name: stat php_fpm_pool_conf_path
-  stat:
+  ansible.builtin.stat:
     path: "{{ php_fpm_pool_conf_path | dirname }}"
   register: php_fpm_pool_conf_path_dir_stat
 
 - name: ensure the default pool directory exists
-  file:
+  ansible.builtin.file:
     path: "{{ php_fpm_pool_conf_path | dirname }}"
     state: directory
     owner: root
@@ -63,7 +63,7 @@
     - php_fpm_pool_conf_path_dir_stat.stat.islnk is not defined
 
 - name: create php-fpm.conf
-  template:
+  ansible.builtin.template:
     src: php-fpm.conf.j2
     dest: "{{ php_fpm_conf_path }}/php-fpm.conf"
     owner: root
@@ -74,9 +74,12 @@
   notify:
     - restart php-fpm
 
-- block:
+- name: PHP modules
+  when:
+    - php_modules_conf_paths is defined
+  block:
     - name: ensure the modules directory {{ php_modules_conf_paths }} exists
-      file:
+      ansible.builtin.file:
         path: "{{ php_modules_conf_paths }}"
         state: directory
         owner: root
@@ -86,7 +89,7 @@
         - php_modules_conf_paths is defined
 
     - name: configure modules
-      template:
+      ansible.builtin.template:
         src: php_module.ini.j2
         dest: "{{ php_modules_conf_paths }}/{{ item.name }}.ini"
         mode: 0644
@@ -98,7 +101,7 @@
         label: "{{ item.name }} - enabled: {{ item.enabled }}"
 
     - name: enable modules
-      file:
+      ansible.builtin.file:
         src: "{{ php_modules_conf_paths }}/{{ item.0.name }}.ini"
         dest: "{{ item.1 }}{{ '/conf.d/' if ansible_os_family | lower != 'redhat' else '/' }}{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
         state: link
@@ -114,7 +117,7 @@
         - restart php-fpm
 
     - name: disable modules
-      file:
+      ansible.builtin.file:
         path: "{{ item.1 }}{{ '/conf.d/' if ansible_os_family | lower != 'redhat' else '/' }}{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
         state: absent
       when:
@@ -126,8 +129,5 @@
         label: "{{ item.0.name }} - enabled: {{ item.0.enabled }}"
       notify:
         - restart php-fpm
-
-  when:
-    - php_modules_conf_paths is defined
 
 ...

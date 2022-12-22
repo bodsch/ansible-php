@@ -1,7 +1,7 @@
 ---
 
 - name: include OS specific configuration
-  include_vars: "{{ lookup('first_found', params) }}"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
       paths:
@@ -19,81 +19,91 @@
       skip: true
 
 - name: assert missing defined php version
-  assert:
+  ansible.builtin.assert:
     that:
       - php_version | int not in ["7", "8"]
     msg: php version is missing or wrong major version
     quiet: true
 
-- block:
+- name: debian
+  when:
+    - ansible_os_family | lower == 'debian'
+  block:
     - name: make sure python3-apt is installed (only debian based)
-      package:
+      ansible.builtin.package:
         name:
           - python3-apt
         state: present
 
     - name: clean apt cache
-      command: apt-get clean
-      args:
-        warn: false
+      ansible.builtin.command: |
+        apt-get clean
       register: apt_clean
       changed_when: apt_clean.rc != 0
       failed_when: apt_clean.rc != 0
+      when: "ansible_version.full is version_compare('2.13', '<')"
+
+    - name: clean apt cache
+      ansible.builtin.apt:
+        clean: true
+      when: "ansible_version.full is version_compare('2.13', '>=')"
 
     - name: update package
-      package:
+      ansible.builtin.package:
         update_cache: true
 
-  when:
-    - ansible_os_family | lower == 'debian'
-
 - name: install dependencies
-  package:
+  ansible.builtin.package:
     name: "{{ php_dependencies }}"
     state: present
   when:
     - php_dependencies | default([]) | count > 0
 
 - name: repositories
-  include_tasks: repositories.yaml
+  ansible.builtin.include_tasks: repositories.yaml
 
 - name: do facts module to get latest information
-  setup:
+  ansible.builtin.setup:
     gather_subset:
       - '!all'
       - '!any'
       - facter
 
 - name: define pool user
-  set_fact:
+  ansible.builtin.set_fact:
     php_fpm_pool_user: "{{ php_fpm_pool_user_default }}"
   when:
     - not php_fpm_pool_user is defined or php_fpm_pool_user | length == 0
 
-- block:
+- name: re-define primary group
+  when:
+    - not php_fpm_pool_group is defined or php_fpm_pool_group | length == 0
+  block:
     - name: "find primary group for user '{{ php_fpm_pool_user }}'"
-      getent:
+      ansible.builtin.getent:
         database: group
         key: "{{ php_fpm_pool_user }}"
         split: ':'
 
     - name: "set php_fpm_pool_group '{{ getent_group | list | first }}'"
-      set_fact:
+      ansible.builtin.set_fact:
         php_fpm_pool_group: "{{ getent_group | list | first }}"
       when:
         - getent_group is defined
-  when:
-    - not php_fpm_pool_group is defined or php_fpm_pool_group | length == 0
 
 - name: assert pool group
-  assert:
+  ansible.builtin.assert:
     that:
       - php_fpm_pool_group is defined or php_fpm_pool_group | length == 0
     msg: no php-fpm pool group detected
     quiet: true
 
+- name: merge php configuration between defaults and custom
+  ansible.builtin.set_fact:
+    php_fpm_global: "{{ php_fpm_defaults_global | combine(php_fpm_global, recursive=True) }}"
+
 - name: create ansible local facts directory
-  file:
+  ansible.builtin.file:
     dest: /etc/ansible/facts.d
     state: directory
     owner: root

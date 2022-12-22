@@ -18,7 +18,7 @@ def base_directory():
     """ ... """
     cwd = os.getcwd()
 
-    if('group_vars' in os.listdir(cwd)):
+    if ('group_vars' in os.listdir(cwd)):
         directory = "../.."
         molecule_directory = "."
     else:
@@ -121,7 +121,7 @@ def test_installed_custom_package(host, get_vars):
     """
     custom_packages = get_vars.get("php_custom_packages")
 
-    if(custom_packages):
+    if (custom_packages):
         distribution = host.system_info.distribution
 
         for pkg in custom_packages:

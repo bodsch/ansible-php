@@ -2,7 +2,7 @@
 
 # move from filter to library
 - name: add php version to various php packages
-  set_fact:
+  ansible.builtin.set_fact:
     php_packages: "{{ php_packages | add_php_version(php_version) }}"
 
   when:
@@ -10,33 +10,36 @@
     - php_major_version | int == 8
 
 - name: ensure PHP packages are installed.
-  package:
+  ansible.builtin.package:
     name: "{{ php_packages }}"
     state: "{{ php_packages_state }}"
 
 - name: add php version to custom package list
-  set_fact:
+  ansible.builtin.set_fact:
     php_custom_packages: "{{ php_custom_packages |
       map('string_postfix', 'php' ~ php_package_version ~ '-' ) | list }}"
   when:
     - ansible_os_family | lower == 'redhat'
 
 - name: ensure custom PHP packages are installed.
-  package:
+  ansible.builtin.package:
     name: "{{ php_custom_packages }}"
     state: "{{ php_packages_state }}"
   when:
     - php_custom_packages | default([]) | count > 0
 
-- block:
+- name: redhat
+  when:
+    - ansible_os_family | lower == 'redhat'
+  block:
     - name: create PHP directory under /etc
-      file:
+      ansible.builtin.file:
         path: "/etc/php/{{ php_version }}"
         state: directory
         mode: 0750
 
     - name: create links for PHP packages
-      file:
+      ansible.builtin.file:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
         state: link
@@ -66,24 +69,22 @@
         label: "{{ item.dest }}"
 
     - name: create php{{ php_package_version }}-php-fpm.service.d
-      file:
+      ansible.builtin.file:
         path: "{{ systemd_lib_directory }}/php{{ php_package_version }}-php-fpm.service.d"
         state: directory
         mode: 0750
 
     - name: create overwrite.conf for systemd
-      template:
+      ansible.builtin.template:
         src: "init/systemd/overwrite.conf.j2"
         dest: "{{ systemd_lib_directory }}/php{{ php_package_version }}-php-fpm.service.d/override.conf"
         mode: 0750
       notify:
         - systemctl daemon-reload
         - restart php-fpm
-  when:
-    - ansible_os_family | lower == 'redhat'
 
 - name: create openrc init script
-  template:
+  ansible.builtin.template:
     src: init/openrc/init.d/php-fpm.j2
     dest: /etc/init.d/php{{ php_major_version }}-fpm
     mode: 0755

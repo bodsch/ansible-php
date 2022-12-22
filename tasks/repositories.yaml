@@ -2,31 +2,33 @@
 
 - name: redhat based
   become: true
+  when:
+    - ansible_os_family | lower == 'redhat'
   block:
     # RPM-GPG-KEY-remi2018: the GnuPG public key of the key pair used to sign my packages (Fedora 28-29 and EL-8)
     # RPM-GPG-KEY-remi2017: the GnuPG public key of the key pair used to sign my packages (Fedora 26-27)
     # RPM-GPG-KEY-remi    : the GnuPG public key of the key pair used to sign my packages (Fedora <= 25 and EL <= 7)
     - name: import remi2018 GPG key.
-      rpm_key:
+      ansible.builtin.rpm_key:
         key: https://rpms.remirepo.net/RPM-GPG-KEY-remi2018
         state: present
       when:
         - ansible_distribution_major_version | int >= 8
 
     - name: import remi GPG key.
-      rpm_key:
+      ansible.builtin.rpm_key:
         key: http://rpms.remirepo.net/RPM-GPG-KEY-remi
         state: present
       when:
         - ansible_distribution_major_version | int <= 7
 
     - name: import EPEL GPG key.
-      rpm_key:
+      ansible.builtin.rpm_key:
         key: https://archive.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
         state: present
 
     - name: install EPEL repository
-      yum_repository:
+      ansible.builtin.yum_repository:
         name: epel
         state: present
         description: Extra Packages for Enterprise Linux {{ ansible_distribution_major_version }} - $basearch
@@ -38,45 +40,43 @@
         enabled: 1
 
     - name: install remi repository
-      package:
+      ansible.builtin.package:
         name: http://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm
         state: present
-  when:
-    - ansible_os_family | lower == 'redhat'
 
 - name: debian based
   become: true
+  when:
+    - ansible_os_family | lower == 'debian'
+    - php_version | int == 8
   block:
     - name: debian
+      when:
+        ansible_distribution | lower == "debian"
       block:
         - name: add apt signing key (debian)
-          apt_key:
+          ansible.builtin.apt_key:
             id: 15058500A0235D97F5D10063B188E2B695BD4743
             url: https://packages.sury.org/php/apt.gpg
 
         - name: create sury-php source list
-          template:
+          ansible.builtin.template:
             src: apt/sources.list.d/debian-sury-php.list.j2
             dest: /etc/apt/sources.list.d/debian-sury-php.list
             mode: 0644
-      when:
-        ansible_distribution | lower == "debian"
 
     - name: ubuntu
+      when:
+        ansible_distribution | lower == "ubuntu"
       block:
         - name: add php repository from PPA
           ansible.builtin.apt_repository:
             repo: ppa:ondrej/php
             codename: "{{ ansible_distribution_release }}"
-      when:
-        ansible_distribution | lower == "ubuntu"
-  when:
-    - ansible_os_family | lower == 'debian'
-    - php_version | int == 8
 
 - name: update package cache
   become: true
-  package:
+  ansible.builtin.package:
     update_cache: true
 
 ...

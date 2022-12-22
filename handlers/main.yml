@@ -1,11 +1,14 @@
 ---
 
 - name: systemctl daemon-reload
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
+    force: true
+  when:
+    - ansible_service_mgr | lower == "systemd"
 
 - name: restart php-fpm
-  service:
+  ansible.builtin.service:
     name: "{{ php_fpm_daemon }}"
     state: restarted
   when:

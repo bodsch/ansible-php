@@ -1,32 +1,37 @@
 ---
 
 - name: prepare
-  include_tasks: prepare.yaml
+  ansible.builtin.include_tasks: prepare.yaml
   tags:
     - php-fpm
 
 - name: detect available php version
-  include_tasks: detect_php_version.yaml
+  ansible.builtin.include_tasks: detect_php_version.yaml
   tags:
     - php-fpm
 
-- include_tasks: install.yaml
+- name: install
+  ansible.builtin.include_tasks: install.yaml
   tags:
     - php-fpm
 
-- include_tasks: configure.yaml
+- name: configure
+  ansible.builtin.include_tasks: configure.yaml
   tags:
     - php-fpm
 
-- include_tasks: dynamic-pools.yaml
+- name: dynamic pools
+  ansible.builtin.include_tasks: dynamic-pools.yaml
   tags:
     - php-fpm
 
-- include_tasks: service.yaml
+- name: service
+  ansible.builtin.include_tasks: service.yaml
   tags:
     - php-fpm
 
-- include_tasks: facts.yaml
+- name: ansible facts
+  ansible.builtin.include_tasks: facts.yaml
   tags:
     - php-fpm
 

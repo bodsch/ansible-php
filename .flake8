@@ -2,8 +2,9 @@
 
 # E221 multiple spaces before operator
 # E251 unexpected spaces around keyword / parameter equals
+# W605 invalid escape sequence
 
-ignore = E221,E251
+ignore = E221,E251,W605
 
 exclude =
   # No need to traverse our git directory
@@ -11,9 +12,6 @@ exclude =
   # There's no value in checking cache directories
   __pycache__,
   .tox
-
-# E203: https://github.com/python/black/issues/315
-# ignore = D,E741,W503,W504,H,E501,E203
 
 max-line-length = 195
 

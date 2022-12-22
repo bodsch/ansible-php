@@ -1,14 +1,14 @@
 ---
 
 - name: delete the default pool configuration file
-  file:
+  ansible.builtin.file:
     path: "{{ php_fpm_pool_conf_path }}/{{ php_fpm_default_pool.name }}"
     state: absent
   when:
     - php_fpm_default_pool.delete
 
 - name: assert needed pool variables
-  assert:
+  ansible.builtin.assert:
     msg: "needed variable are not defined"
     that:
       - item.group is defined
@@ -26,7 +26,7 @@
     label: "{{ item.name }}"
 
 - name: create pool configuration
-  template:
+  ansible.builtin.template:
     src: pool.conf.j2
     dest: "{{ php_fpm_pool_conf_path }}/{{ item.name }}.conf"
     mode: 0644
