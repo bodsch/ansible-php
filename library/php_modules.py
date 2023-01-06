@@ -90,12 +90,12 @@ class PHPModules(object):
                 else:
                     module_link_name = os.path.join(self.dest, conf_d, f"{module_priority}-{module_name}.ini")
 
-                self.module.log(msg=f"module_name   : {module_name}")
-                self.module.log(msg=f"  - state     : {module_state}")
-                self.module.log(msg=f"  - priority  : {module_priority}")
-                self.module.log(msg=f"  - file name : {module_file_name}")
-                self.module.log(msg=f"  - link name : {module_link_name}")
-                self.module.log(msg=f"  - link names : {module_link_names}")
+                # self.module.log(msg=f"module_name   : {module_name}")
+                # self.module.log(msg=f"  - state     : {module_state}")
+                # self.module.log(msg=f"  - priority  : {module_priority}")
+                # self.module.log(msg=f"  - file name : {module_file_name}")
+                # self.module.log(msg=f"  - link name : {module_link_name}")
+                # self.module.log(msg=f"  - link names : {module_link_names}")
 
                 res[module_name] = dict()
 
@@ -159,6 +159,11 @@ class PHPModules(object):
             os.remove(destination)
             os.symlink(source, destination)
         else:
+            if os.path.exists(destination):
+                if not os.path.islink(destination):
+                    # rename
+                    os.rename(destination, f"{destination}.DIST")
+
             os.symlink(source, destination)
 
     def _write_module(self, module_name, file_name, data=None):
@@ -219,9 +224,12 @@ class PHPModules(object):
         changed = False
 
         for link in module_link_names:
+            result[link] = dict()
             if os.path.exists(link):
                 os.remove(link)
-                result[link] = True
+                result[link].update({"msg": f"link {link} removed", "changed": True})
+            else:
+                result[link].update({"msg": f"no link for {link} found", "changed": False})
 
         changed = (len({k: v for k, v in result.items() if v.get('changed')}) > 0)
 
