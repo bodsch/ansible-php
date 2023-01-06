@@ -7,8 +7,8 @@ galaxy_info:
   author: Bodo Schulz
   description: ansible role to install and configure php-fpm
 
-  license: Apapche
-  min_ansible_version: 2.10
+  license: Apache
+  min_ansible_version: "2.10"
 
   platforms:
     - name: ArchLinux
@@ -24,7 +24,7 @@ galaxy_info:
         - focal
     - name: EL
       versions:
-        - 8
+        - "8"
 
   galaxy_tags:
     - programing
