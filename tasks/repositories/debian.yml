@@ -1,0 +1,33 @@
+---
+
+- name: debian based
+  become: true
+  when:
+    - ansible_os_family | lower == 'debian'
+    - php_version | int == 8
+  block:
+    - name: debian
+      when:
+        ansible_distribution | lower == "debian"
+      block:
+        - name: add apt signing key (debian)
+          ansible.builtin.apt_key:
+            id: 15058500A0235D97F5D10063B188E2B695BD4743
+            url: https://packages.sury.org/php/apt.gpg
+
+        - name: create sury-php source list
+          ansible.builtin.template:
+            src: apt/sources.list.d/debian-sury-php.list.j2
+            dest: /etc/apt/sources.list.d/debian-sury-php.list
+            mode: 0644
+
+    - name: ubuntu
+      when:
+        ansible_distribution | lower == "ubuntu"
+      block:
+        - name: add php repository from PPA
+          ansible.builtin.apt_repository:
+            repo: ppa:ondrej/php
+            codename: "{{ ansible_distribution_release }}"
+
+...

@@ -1,4 +1,19 @@
 ---
+#     - name: configure modules
+#       php_modules:
+#         php_modules: "{{ php_modules }}"
+#         php_modules_path: "/etc/php/8.2/mods-available"
+#         dest:
+#           - /etc/php/8.2/fpm
+#           - /etc/php/8.2/cli
+#         # force: true
+#       register: _modules_state
+#       when:
+#         - php_modules is defined
+#
+#     - name: d
+#       debug:
+#         msg: "{{ _modules_state }}"
 
 - name: prepare
   ansible.builtin.include_tasks: prepare.yaml
@@ -16,12 +31,7 @@
     - php-fpm
 
 - name: configure
-  ansible.builtin.include_tasks: configure.yaml
-  tags:
-    - php-fpm
-
-- name: dynamic pools
-  ansible.builtin.include_tasks: dynamic-pools.yaml
+  ansible.builtin.include_tasks: configure/main.yml
   tags:
     - php-fpm
 

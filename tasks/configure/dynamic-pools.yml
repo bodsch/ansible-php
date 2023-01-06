@@ -12,7 +12,7 @@
     msg: "needed variable are not defined"
     that:
       - item.group is defined
-      - item.pm is defined and (item.pm == 'static' or item.pm == 'dynamic' or item.pm == 'ondemand')
+      - item.pm is defined and (item.pm in ['static','dynamic','ondemand'])
       - item['pm.max_children'] is defined
       - item['pm.start_servers'] is defined
       - item['pm.min_spare_servers'] is defined

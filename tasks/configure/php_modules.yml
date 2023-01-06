@@ -1,0 +1,76 @@
+---
+
+- name: PHP modules
+  when:
+    - php_modules_conf_paths is defined
+    - php_modules_conf_paths | string | length > 0
+  block:
+    - name: ensure the modules directory {{ php_modules_conf_paths }} exists
+      ansible.builtin.file:
+        path: "{{ php_modules_conf_paths }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+      when:
+        - php_modules_conf_paths is defined
+
+    - name: configure modules
+      php_modules:
+        php_modules: "{{ php_modules }}"
+        php_modules_path: "{{ php_modules_conf_paths }}"
+        dest: "{{ php_conf_paths }}"
+        # force: true
+      register: _modules_state
+      when:
+        - php_modules is defined
+
+    - name: d
+      debug:
+        msg: "{{ _modules_state }}"
+      when:
+        - _modules_state.changed
+
+    # - name: configure modules
+    #   ansible.builtin.template:
+    #     src: php_module.ini.j2
+    #     dest: "{{ php_modules_conf_paths }}/{{ item.name }}.ini"
+    #     mode: 0644
+    #     backup: true
+    #   when: item.enabled | bool | default(false)
+    #   loop:
+    #     '{{ php_modules }}'
+    #   loop_control:
+    #     label: "{{ item.name }} - enabled: {{ item.enabled }}"
+    #
+    # - name: enable modules
+    #   ansible.builtin.file:
+    #     src: "{{ php_modules_conf_paths }}/{{ item.0.name }}.ini"
+    #     dest: "{{ item.1 }}{{ '/conf.d/' if ansible_os_family | lower != 'redhat' else '/' }}{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
+    #     state: link
+    #     force: true
+    #   when:
+    #     - item.0.enabled | bool | default(false)
+    #   with_nested:
+    #     - '{{ php_modules }}'
+    #     - "{{ php_conf_paths }}"
+    #   loop_control:
+    #     label: "{{ item.0.name }} - enabled: {{ item.0.enabled }} | {{ item.1 }}{{ '/conf.d/' if ansible_os_family | lower != 'redhat' else '/' }}{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
+    #   notify:
+    #     - restart php-fpm
+    #
+    # - name: disable modules
+    #   ansible.builtin.file:
+    #     path: "{{ item.1 }}{{ '/conf.d/' if ansible_os_family | lower != 'redhat' else '/' }}{{ item.0.priority | default(20) }}-{{ item.0.name }}.ini"
+    #     state: absent
+    #   when:
+    #     - not item.0.enabled | bool | default(false)
+    #   with_nested:
+    #     - '{{ php_modules }}'
+    #     - "{{ php_conf_paths }}"
+    #   loop_control:
+    #     label: "{{ item.0.name }} - enabled: {{ item.0.enabled }}"
+    #   notify:
+    #     - restart php-fpm
+
+...

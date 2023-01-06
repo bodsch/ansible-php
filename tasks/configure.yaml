@@ -77,6 +77,7 @@
 - name: PHP modules
   when:
     - php_modules_conf_paths is defined
+    - php_modules_conf_paths | string | length > 0
   block:
     - name: ensure the modules directory {{ php_modules_conf_paths }} exists
       ansible.builtin.file:

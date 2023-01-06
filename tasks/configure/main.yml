@@ -1,0 +1,86 @@
+---
+
+- name: ensure configuration directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    follow: true
+  with_flattened:
+    - "{{ php_conf_paths }}"
+    - "{{ php_extension_conf_paths }}"
+
+- name: ensure log directory exist
+  ansible.builtin.file:
+    path: "{{ php_fpm_log_directory }}"
+    state: directory
+    mode: 0755
+
+- name: ensure temp directory for upload exist
+  ansible.builtin.file:
+    path: "{{ php_fpm_tmp_upload_directory }}"
+    state: directory
+    owner: "{{ php_fpm_pool_user }}"
+    group: "{{ php_fpm_pool_group }}"
+    mode: 0755
+
+- name: ensure socket directory exist
+  ansible.builtin.file:
+    path: "{{ php_fpm_socket_directory }}"
+    state: directory
+    owner: "{{ php_fpm_pool_user }}"
+    group: "{{ php_fpm_pool_group }}"
+    mode: 0755
+
+- name: create php.ini configuration files
+  ansible.builtin.template:
+    src: php.ini.j2
+    dest: "{{ item }}/php.ini"
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+  loop:
+    "{{ php_conf_paths }}"
+  loop_control:
+    label: "{{ item }}"
+  when:
+    - php_use_managed_ini | bool
+
+- name: check if {{ php_fpm_pool_conf_path }} exists
+  ansible.builtin.stat:
+    path: "{{ php_fpm_pool_conf_path | dirname }}"
+  register: php_fpm_pool_conf_path_dir_stat
+
+- name: ensure the default pool directory exists
+  ansible.builtin.file:
+    path: "{{ php_fpm_pool_conf_path | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when:
+    - php_fpm_pool_conf_path_dir_stat.stat.islnk is not defined
+
+- name: create php-fpm.conf
+  ansible.builtin.template:
+    src: php-fpm.conf.j2
+    dest: "{{ php_fpm_conf_path }}/php-fpm.conf"
+    owner: root
+    group: root
+    force: true
+    backup: true
+    mode: 0644
+  notify:
+    - restart php-fpm
+
+- name: PHP modules
+  ansible.builtin.include_tasks: configure/php_modules.yml
+  when:
+    - php_modules_conf_paths is defined
+    - php_modules_conf_paths | string | length > 0
+
+- name: dynamic pools
+  ansible.builtin.include_tasks: configure/dynamic-pools.yml
+
+...
