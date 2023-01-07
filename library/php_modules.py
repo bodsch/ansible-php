@@ -59,7 +59,7 @@ class PHPModules(object):
         # {{ '/conf.d/' if ansible_os_family | lower != 'redhat' else '/' }}"
         conf_d = "conf.d"
 
-        #if self.distribution.lower() in ["debian", "ubuntu"]:
+        # if self.distribution.lower() in ["debian", "ubuntu"]:
         #    conf_d = "conf.d"
 
         if self.distribution.lower() in ["redhat", "centos", "oracle", "fedora", "rocky", "almalinux"]:
@@ -81,20 +81,15 @@ class PHPModules(object):
                 module_priority = module.get("priority", 10)
                 module_content = module.get("content", None)
                 module_file_name = os.path.join(self.php_modules_path, f"{module_name}.ini")
-                module_link_name = None
                 module_link_names = []
 
-                if isinstance(self.dest, list):
-                    for path in self.dest:
-                        module_link_names.append(os.path.join(path, conf_d, f"{module_priority}-{module_name}.ini"))
-                else:
-                    module_link_name = os.path.join(self.dest, conf_d, f"{module_priority}-{module_name}.ini")
+                for path in self.dest:
+                    module_link_names.append(os.path.join(path, conf_d, f"{module_priority}-{module_name}.ini"))
 
                 # self.module.log(msg=f"module_name   : {module_name}")
                 # self.module.log(msg=f"  - state     : {module_state}")
                 # self.module.log(msg=f"  - priority  : {module_priority}")
                 # self.module.log(msg=f"  - file name : {module_file_name}")
-                # self.module.log(msg=f"  - link name : {module_link_name}")
                 # self.module.log(msg=f"  - link names : {module_link_names}")
 
                 res[module_name] = dict()
