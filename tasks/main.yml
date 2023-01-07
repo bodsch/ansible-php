@@ -1,0 +1,33 @@
+---
+
+- name: prepare
+  ansible.builtin.include_tasks: prepare.yml
+  tags:
+    - php-fpm
+
+- name: detect available php version
+  ansible.builtin.include_tasks: detect_php_version.yml
+  tags:
+    - php-fpm
+
+- name: install
+  ansible.builtin.include_tasks: install.yml
+  tags:
+    - php-fpm
+
+- name: configure
+  ansible.builtin.include_tasks: configure/main.yml
+  tags:
+    - php-fpm
+
+- name: service
+  ansible.builtin.include_tasks: service.yml
+  tags:
+    - php-fpm
+
+- name: ansible facts
+  ansible.builtin.include_tasks: facts.yml
+  tags:
+    - php-fpm
+
+...
