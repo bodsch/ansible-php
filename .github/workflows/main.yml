@@ -120,7 +120,6 @@ jobs:
           - rockylinux:8
           - almalinux:8
         ansible-version:
-          - '4.10'
           - '5.1'
 
     steps:
