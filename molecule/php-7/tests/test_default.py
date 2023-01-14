@@ -1,13 +1,12 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
+# coding: utf-8
 from __future__ import unicode_literals
 
 from ansible.parsing.dataloader import DataLoader
 from ansible.template import Templar
 
+import json
 import pytest
 import os
-import json
 
 import testinfra.utils.ansible_runner
 
@@ -26,31 +25,32 @@ def pp_json(json_thing, sort=True, indents=2):
 
 
 def base_directory():
-    """ ... """
+    """
+    """
     cwd = os.getcwd()
 
-    if ('group_vars' in os.listdir(cwd)):
+    if 'group_vars' in os.listdir(cwd):
         directory = "../.."
         molecule_directory = "."
     else:
         directory = "."
-        molecule_directory = "molecule/{}".format(os.environ.get('MOLECULE_SCENARIO_NAME'))
+        molecule_directory = f"molecule/{os.environ.get('MOLECULE_SCENARIO_NAME')}"
 
     return directory, molecule_directory
 
 
 def read_ansible_yaml(file_name, role_name):
-    ext_arr = ["yml", "yaml"]
-
+    """
+    """
     read_file = None
 
-    for e in ext_arr:
-        test_file = "{}.{}".format(file_name, e)
+    for e in ["yml", "yaml"]:
+        test_file = f"{file_name}.{e}"
         if os.path.isfile(test_file):
             read_file = test_file
             break
 
-    return "file={} name={}".format(read_file, role_name)
+    return f"file={read_file} name={role_name}"
 
 
 @pytest.fixture()
@@ -64,26 +64,28 @@ def get_vars(host):
     """
     base_dir, molecule_dir = base_directory()
     distribution = host.system_info.distribution
+    operation_system = None
 
     if distribution in ['debian', 'ubuntu']:
-        os = "debian"
+        operation_system = "debian"
     elif distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
-        os = "redhat"
-    elif distribution in ['arch']:
-        os = "archlinux"
+        operation_system = "redhat"
+    elif distribution in ['arch', 'artix']:
+        operation_system = f"{distribution}linux"
 
-    print(" -> {} / {}".format(distribution, os))
+    # print(" -> {} / {}".format(distribution, os))
+    # print(" -> {}".format(base_dir))
 
-    file_defaults = read_ansible_yaml("{}/defaults/main".format(base_dir), "role_defaults")
-    file_vars = read_ansible_yaml("{}/vars/main".format(base_dir), "role_vars")
-    file_distibution = read_ansible_yaml("{}/vars/{}".format(base_dir, os), "role_distibution")
-    file_molecule = read_ansible_yaml("{}/group_vars/all/vars".format(base_dir), "test_vars")
+    file_defaults      = read_ansible_yaml(f"{base_dir}/defaults/main", "role_defaults")
+    file_vars          = read_ansible_yaml(f"{base_dir}/vars/main", "role_vars")
+    file_distibution   = read_ansible_yaml(f"{base_dir}/vars/{operation_system}", "role_distibution")
+    file_molecule      = read_ansible_yaml(f"{molecule_dir}/group_vars/all/vars", "test_vars")
     # file_host_molecule = read_ansible_yaml("{}/host_vars/{}/vars".format(base_dir, HOST), "host_vars")
 
-    defaults_vars = host.ansible("include_vars", file_defaults).get("ansible_facts").get("role_defaults")
-    vars_vars = host.ansible("include_vars", file_vars).get("ansible_facts").get("role_vars")
-    distibution_vars = host.ansible("include_vars", file_distibution).get("ansible_facts").get("role_distibution")
-    molecule_vars = host.ansible("include_vars", file_molecule).get("ansible_facts").get("test_vars")
+    defaults_vars      = host.ansible("include_vars", file_defaults).get("ansible_facts").get("role_defaults")
+    vars_vars          = host.ansible("include_vars", file_vars).get("ansible_facts").get("role_vars")
+    distibution_vars   = host.ansible("include_vars", file_distibution).get("ansible_facts").get("role_distibution")
+    molecule_vars      = host.ansible("include_vars", file_molecule).get("ansible_facts").get("test_vars")
     # host_vars          = host.ansible("include_vars", file_host_molecule).get("ansible_facts").get("host_vars")
 
     ansible_vars = defaults_vars
@@ -116,11 +118,14 @@ def test_installed_package(host, get_vars):
 
     if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
         package_version = local_facts(host).get("version").get("package")
-        package = 'php{0}-php-fpm'.format(package_version)
+        package = f"php{package_version}-php-fpm"
 
     if distribution == 'arch':
-        package_version = local_facts(host).get("version").get("major")
-        package = 'php{0}-fpm'.format(package_version)
+        if package_version == 7:
+            package_version = local_facts(host).get("version").get("major")
+            package = f"php{package_version}-fpm"
+        else:
+            package = f"php-fpm"
 
     p = host.package(package)
     assert p.is_installed
@@ -140,20 +145,13 @@ def test_installed_custom_package(host, get_vars):
 
             if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
                 package_version = local_facts(host).get("version").get("package")
-                package = 'php{0}-{1}'.format(
-                    package_version,
-                    pkg
-                )
+                package = f"php{package_version}-{pkg}"
 
             p = host.package(package)
             assert p.is_installed
 
 
-@pytest.mark.parametrize("dirs", [
-    "/etc/php/{}/cli",
-    "/etc/php/{}/fpm"
-])
-def test_directories(host, dirs, get_vars):
+def test_directories(host, get_vars):
     """
         test created directories
     """
@@ -163,26 +161,37 @@ def test_directories(host, dirs, get_vars):
 
     package_version = local_facts(host).get("version").get("full")
     directories = [
-        "/etc/php/{}/cli",
-        "/etc/php/{}/fpm"
+        f"/etc/php/{package_version}/cli",
+        f"/etc/php/{package_version}/fpm"
     ]
 
     if distribution == 'arch':
         package_version = local_facts(host).get("version").get("major")
-        directories = [
-            "/etc/php{0}/conf.d",
-            "/etc/php{0}/mods-available",
-            "/etc/php{0}/php-fpm.d"
-        ]
+
+        if package_version == 7:
+            directories = [
+                f"/etc/php{package_version}/conf.d",
+                f"/etc/php{package_version}/mods-available",
+                f"/etc/php{package_version}/php-fpm.d"
+            ]
+        else:
+            directories = [
+                f"/etc/php/conf.d",
+                f"/etc/php/mods-available",
+                f"/etc/php/php-fpm.d"
+            ]
+
     if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
         directories = [
-            "/etc/php/{}/php.d",
-            "/etc/php/{}/php-fpm.d"
+            f"/etc/php/{package_version}/php.d",
+            f"/etc/php/{package_version}/php-fpm.d"
         ]
 
+    print(f"directory: {directories}")
+
     for dirs in directories:
-        d = host.file(dirs.format(package_version))
-        print("directory: {0}".format(d))
+
+        d = host.file(dirs)
 
         if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
             assert d.exists
@@ -222,7 +231,6 @@ def test_fpm_pools(host, get_vars):
     for pool in get_vars.get("php_fpm_pools"):
         name = pool.get("name")
         listen = pool.get("listen")
-        # listen = listen.replace('//', "/{}/".format(daemon))
 
         local_facts(host).get("socket_directory"),
 
@@ -231,4 +239,4 @@ def test_fpm_pools(host, get_vars):
         print(socket_name)
 
         assert host.file(socket_name).exists
-        assert host.socket("unix://{0}".format(socket_name)).is_listening
+        assert host.socket(f"unix://{socket_name}").is_listening

@@ -187,7 +187,7 @@ class PHPVersion(object):
 
             pacman --noconfirm --sync --search php7 | grep -E "^(extra|world)\/php7 (.*)\[installed\]" | cut -d' ' -f2
         """
-        self.module.log(msg="= {function_name}()".format(function_name="_search_pacman"))
+        self.module.log(msg="= _search_pacman()")
 
         # match to
         #  extra/php 8.1.2-1
@@ -203,11 +203,16 @@ class PHPVersion(object):
         rc, out, err = self._pacman(args)
 
         version = re.findall(pattern, out)
+
+        # version = result.group(1)
+
         versions = []
 
         if version:
             if len(version) == 1:
-                return False, version[0].group('version'), ""
+                result = re.search(pattern, out)
+
+                return False, result.group('version'), ""
             else:
                 v = ""
                 for _, v in version:
@@ -232,7 +237,7 @@ class PHPVersion(object):
         '''   '''
         cmd = [self.pacman_bin] + args
 
-        # self.module.log(msg="cmd: {}".format(cmd))
+        self.module.log(msg=f"cmd: {cmd}")
 
         rc, out, err = self.module.run_command(cmd, check_rc=True)
         # self.module.log(msg="  rc : '{}'".format(rc))

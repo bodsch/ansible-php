@@ -7,7 +7,9 @@ Only inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
 
 Detect available PHP Version based on `php_version` Variable.
 
-Supports PHP7 and PHP8.
+Supports PHP version 7 and 8, **as long as the corresponding versions are available.**
+
+ArchLinux has removed the PHP 7 packages from their repository!
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-php/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-php)][issues]
@@ -25,7 +27,7 @@ Supports PHP7 and PHP8.
 
 Tested on
 
-* ArchLinux
+* ArchLinux (**only PHP 8!**)
 * ArtixLinux
 * Debian based
     - Debian 10 / 11

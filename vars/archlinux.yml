@@ -6,9 +6,9 @@ php_packages:
   - php{{ php_major_version }}
   - php{{ php_major_version }}-fpm
   - php{{ php_major_version }}-gd
-  - php{{ php_major_version }}-imap
+  # - php{{ php_major_version }}-imap
   - php{{ php_major_version }}-intl
-  - php{{ php_major_version }}-memcached
+  - php{{ php_major_version }}-memcache
   - php{{ php_major_version }}-apcu
   - php{{ php_major_version }}-igbinary
 
