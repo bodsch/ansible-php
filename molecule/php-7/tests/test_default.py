@@ -125,7 +125,7 @@ def test_installed_package(host, get_vars):
             package_version = local_facts(host).get("version").get("major")
             package = f"php{package_version}-fpm"
         else:
-            package = f"php-fpm"
+            package = "php-fpm"
 
     p = host.package(package)
     assert p.is_installed
@@ -176,9 +176,9 @@ def test_directories(host, get_vars):
             ]
         else:
             directories = [
-                f"/etc/php/conf.d",
-                f"/etc/php/mods-available",
-                f"/etc/php/php-fpm.d"
+                "/etc/php/conf.d",
+                "/etc/php/mods-available",
+                "/etc/php/php-fpm.d"
             ]
 
     if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:

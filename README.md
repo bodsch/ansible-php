@@ -28,7 +28,6 @@ ArchLinux has removed the PHP 7 packages from their repository!
 Tested on
 
 * ArchLinux (**only PHP 8!**)
-* ArtixLinux
 * Debian based
     - Debian 10 / 11
     - Ubuntu 20.04

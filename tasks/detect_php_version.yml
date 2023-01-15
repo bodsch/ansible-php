@@ -6,11 +6,13 @@
   register: detected_php_version
 
 - name: check the detected php version
-  ansible.builtin.assert:
-    that:
-      - php_version is defined
-      - php_version is version_compare(detected_php_version.available.version, '!=')
+  ansible.builtin.fail:
     msg: "The requested PHP version {{ php_version }} was not found!\nVersion {{ detected_php_version.available.version }} is available."
+  when:
+    - php_version is defined
+    - detected_php_version is defined
+    - detected_php_version.available is defined
+    - not detected_php_version.available | verify_version(php_version)
 
 - name: "set php_version '{{ detected_php_version.available.version }}'"
   ansible.builtin.set_fact:
