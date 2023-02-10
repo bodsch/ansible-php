@@ -218,7 +218,7 @@ Please read [Contribution](CONTRIBUTING.md)
 
 The `master` Branch is my *Working Horse* includes the "latest, hot shit" and can be complete broken!
 
-If you want to use something stable, please use a [Tagged Version](https://gitlab.com/bodsch/ansible-php/-/tags)!
+If you want to use something stable, please use a [Tagged Version](https://github.com/bodsch/ansible-php/tags)!
 
 
 ## Author
