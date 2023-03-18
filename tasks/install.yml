@@ -4,7 +4,6 @@
 - name: add php version to various php packages
   ansible.builtin.set_fact:
     php_packages: "{{ php_packages | add_php_version(php_version) }}"
-
   when:
     - ansible_os_family | lower == "debian"
     - php_major_version | int == 8
