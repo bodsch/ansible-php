@@ -135,7 +135,7 @@ def test_installed_custom_package(host, get_vars):
     """
         custom packages
     """
-    custom_packages = get_vars.get("php_custom_packages")
+    custom_packages = get_vars.get("php_packages")
 
     if (custom_packages):
         distribution = host.system_info.distribution

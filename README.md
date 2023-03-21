@@ -97,7 +97,7 @@ php_error_reporting: "E_ALL & ~E_DEPRECATED & ~E_STRICT"
 php_display_errors: "Off"
 php_display_startup_errors: "Off"
 
-php_custom_packages: []
+php_packages: []
 
 php_fpm_default_pool:
   delete: false
@@ -111,12 +111,12 @@ php_modules: []
 
 ### custom packages
 
-To install more PHP packages, you can find a list at `php_custom_packages` specify.
+To install more PHP packages, you can find a list at `php_packages` specify.
 
 E.G.:
 
 ```yaml
-php_custom_packages:
+php_packages:
   - php-ldap
 ```
 

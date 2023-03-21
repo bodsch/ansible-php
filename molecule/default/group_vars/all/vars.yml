@@ -66,3 +66,11 @@ php_modules:
   - name: pdo_mysql
     enabled: false
     priority: 30
+
+php_packages:
+  - php-gd
+  - php-intl
+
+# OBSOLETE
+# replaced by `php_packages`
+php_custom_packages: []

@@ -2,21 +2,21 @@
 
 systemd_lib_directory: /usr/lib/systemd/system
 
-php_packages:
+php_defaults_packages:
   - php{{ php_package_version }}
   - php{{ php_package_version }}-php-cli
   - php{{ php_package_version }}-php-common
   - php{{ php_package_version }}-php-fpm
-  - php{{ php_package_version }}-php-gd
-  - php{{ php_package_version }}-php-ldap
-  - php{{ php_package_version }}-php-mbstring
-  - php{{ php_package_version }}-php-pdo
-  - php{{ php_package_version }}-php-pear
-  - php{{ php_package_version }}-php-pecl-memcache
-  - php{{ php_package_version }}-php-pecl-mysql
-  - php{{ php_package_version }}-php-xml
-  - php{{ php_package_version }}-php-xmlrpc
-  - php{{ php_package_version }}-php-opcache
+  # - php{{ php_package_version }}-php-gd
+  # - php{{ php_package_version }}-php-ldap
+  # - php{{ php_package_version }}-php-mbstring
+  # - php{{ php_package_version }}-php-pdo
+  # - php{{ php_package_version }}-php-pear
+  # - php{{ php_package_version }}-php-pecl-memcache
+  # - php{{ php_package_version }}-php-pecl-mysql
+  # - php{{ php_package_version }}-php-xml
+  # - php{{ php_package_version }}-php-xmlrpc
+  # - php{{ php_package_version }}-php-opcache
 
 php_dependencies:
   - iproute

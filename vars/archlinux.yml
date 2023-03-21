@@ -2,15 +2,15 @@
 
 systemd_lib_directory: /lib/systemd/system
 
-php_packages:
+php_defaults_packages:
   - php{{ php_major_version }}
   - php{{ php_major_version }}-fpm
-  - php{{ php_major_version }}-gd
-  # - php{{ php_major_version }}-imap
-  - php{{ php_major_version }}-intl
-  - php{{ php_major_version }}-memcache
-  - php{{ php_major_version }}-apcu
-  - php{{ php_major_version }}-igbinary
+  # - php{{ php_major_version }}-gd
+  # # - php{{ php_major_version }}-imap
+  # - php{{ php_major_version }}-intl
+  # - php{{ php_major_version }}-memcache
+  # - php{{ php_major_version }}-apcu
+  # - php{{ php_major_version }}-igbinary
 
 php_conf_paths:
   - /etc/php{{ php_major_version }}

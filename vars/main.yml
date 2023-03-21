@@ -2,7 +2,7 @@
 
 systemd_lib_directory: ""
 
-php_packages: []
+php_defaults_packages: []
 
 php_dependencies:
   - iproute2

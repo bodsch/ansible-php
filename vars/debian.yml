@@ -2,20 +2,10 @@
 
 systemd_lib_directory: /lib/systemd/system
 
-php_packages:
+php_defaults_packages:
   - php-common
   - php-cli
   - php-fpm
-  - php-gd
-  - php-curl
-  - php-imap
-  - php-json
-  - php-opcache
-  - php-intl
-  - php-xml
-  - php-mysql
-  - php-mbstring
-  - php-memcached
 
 php_dependencies:
   - iproute2

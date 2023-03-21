@@ -1,0 +1,52 @@
+---
+
+- name: create PHP directory under /etc
+  ansible.builtin.file:
+    path: "/etc/php/{{ php_version }}"
+    state: directory
+    mode: 0750
+
+- name: create links for PHP packages
+  ansible.builtin.file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+    mode: 0750
+  loop:
+    - src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/php"
+      dest: /usr/bin/php
+    - src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/php-cgi"
+      dest: /usr/bin/php-cgi
+    - src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/pecl"
+      dest: /usr/bin/pecl
+    - src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/pear"
+      dest: /usr/bin/pear
+    - src: "/opt/remi/php{{ php_package_version }}/root/usr/bin/phar"
+      dest: /usr/bin/phar
+    - src: "/opt/remi/php{{ php_package_version }}/root/usr/sbin/php-fpm"
+      dest: /usr/sbin/php-fpm
+    - src: "/etc/opt/remi/php{{ php_package_version }}/php.d"
+      dest: "/etc/php/{{ php_version }}/php.d"
+    - src: "/etc/opt/remi/php{{ php_package_version }}/php-fpm.d"
+      dest: "/etc/php/{{ php_version }}/php-fpm.d"
+    - src: "/etc/php/{{ php_version }}/php-fpm.d"
+      dest: "{{ php_fpm_pool_conf_path }}"
+    - src: "/usr/lib/systemd/system/php{{ php_package_version }}-php-fpm.service"
+      dest: /usr/lib/systemd/system/php-fpm.service
+  loop_control:
+    label: "{{ item.dest }}"
+
+- name: create php{{ php_package_version }}-php-fpm.service.d
+  ansible.builtin.file:
+    path: "{{ systemd_lib_directory }}/php{{ php_package_version }}-php-fpm.service.d"
+    state: directory
+    mode: 0750
+
+- name: create overwrite.conf for systemd
+  ansible.builtin.template:
+    src: "init/systemd/overwrite.conf.j2"
+    dest: "{{ systemd_lib_directory }}/php{{ php_package_version }}-php-fpm.service.d/override.conf"
+    mode: 0750
+  notify:
+    - systemctl daemon-reload
+    - restart php-fpm
