@@ -6,6 +6,7 @@ php_defaults_packages:
   - php-common
   - php-cli
   - php-fpm
+  - php-pear
 
 php_dependencies:
   - iproute2
