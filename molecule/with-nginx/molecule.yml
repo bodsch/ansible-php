@@ -24,24 +24,26 @@ provisioner:
   name: ansible
   ansible_args:
     - --diff
-    # - -vv
+    - -v
   config_options:
     defaults:
-      # ansible_managed: "Ansible managed: {file} modified on %Y-%m-%d %H:%M:%S by {uid} on {host}"
-      deprecation_warnings: True
+      deprecation_warnings: true
       stdout_callback: yaml
       callbacks_enabled: profile_tasks
+      gathering: smart
+      fact_caching: jsonfile
+      fact_caching_timeout: 8640
+      fact_caching_connection: ansible_facts
 
 scenario:
   test_sequence:
-    # - lint
     - destroy
     - dependency
     - syntax
     - create
     - prepare
     - converge
-    # - verify
+    - verify
     - destroy
 
 verifier:

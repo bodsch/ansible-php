@@ -1,6 +1,9 @@
 ---
-- hosts: all
+
+- name: converge
+  hosts: instance
   any_errors_fatal: false
+  become: false
 
   environment:
     NETRC: ''
