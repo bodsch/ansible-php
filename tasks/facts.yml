@@ -1,9 +1,16 @@
 ---
 
-- name: create local facts
-  ansible.builtin.template:
-    src: ansible_facts.j2
-    dest: /etc/ansible/facts.d/php_fpm.fact
-    mode: 0755
+- name: create custom fact file
+  bodsch.core.facts:
+    name: php_fpm
+    facts:
+      daemon: "{{ php_fpm_daemon }}"
+      socket_directory: "{{ php_fpm_socket_directory }}"
+      user: "{{ php_fpm_pool_user }}"
+      group: "{{ php_fpm_pool_group }}"
+      version:
+        package: "{{ php_package_version }}"
+        major: "{{ php_major_version }}"
+        full: "{{ php_version }}"
 
 ...

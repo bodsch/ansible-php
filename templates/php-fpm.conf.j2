@@ -20,18 +20,20 @@ syslog.ident                = {{ php_fpm_global.syslog.ident }}
 {% endif %}
 {% if php_fpm_global.log is defined and
       php_fpm_global.log | count > 0 %}
+  {% set _loglevel = "warning" %}
   {% set _valid_loglevel = ["alert", "error", "warning", "notice", "debug"] %}
   {% if php_fpm_global.log.level is defined and
         php_fpm_global.log.level in _valid_loglevel %}
-log_level                   = {{ php_fpm_global.log.level }}
+    {% set _loglevel = php_fpm_global.log.level %}
   {% endif %}
+log_level                   = {{ _loglevel }}
   {% if php_fpm_global.log.limit is defined and
         php_fpm_global.log.limit | string | length > 0 %}
 log_limit                   = {{ php_fpm_global.log.limit }}
   {% endif %}
   {% if php_fpm_global.log.buffering is defined and
         php_fpm_global.log.buffering | string | length > 0 %}
-log_buffering               = {{ php_fpm_global.log.buffering | bool | ternary('yes', 'no') }}
+log_buffering               = {{ php_fpm_global.log.buffering | bool | bodsch.core.config_bool(true_as='yes', false_as='no') }}
   {% endif %}
 {% endif %}
 {% if php_fpm_global.emergency_restart is defined and
@@ -62,7 +64,7 @@ process.priority            = {{ php_fpm_global.process.priority }}
 {% endif %}
 {% if php_fpm_global.daemonize is defined and
       php_fpm_global.daemonize | string | length > 0 %}
-daemonize                   = {{ php_fpm_global.daemonize | bool | ternary('yes', 'no') }}
+daemonize                   = {{ php_fpm_global.daemonize | bool | bodsch.core.config_bool(true_as='yes', false_as='no') }}
 {% endif %}
 {% if php_fpm_global.rlimit is defined and
       php_fpm_global.rlimit | count > 0 %}
