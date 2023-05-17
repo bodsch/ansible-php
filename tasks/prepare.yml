@@ -102,12 +102,4 @@
   ansible.builtin.set_fact:
     php_fpm_global: "{{ php_fpm_defaults_global | combine(php_fpm_global, recursive=True) }}"
 
-- name: create ansible local facts directory
-  ansible.builtin.file:
-    dest: /etc/ansible/facts.d
-    state: directory
-    owner: root
-    group: root
-    mode: 0775
-
 ...
