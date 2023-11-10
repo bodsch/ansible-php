@@ -42,12 +42,11 @@ Tested on
 
 * ArchLinux (**only PHP 8!**)
 * Debian based
-    - Debian 10 / 11
-    - Ubuntu 20.04
-* RedHat based
-    - Alma Linux 8
-    - Rocky Linux 8
-    - OracleLinux 8
+    - Debian 10 / 11 / 12
+    - Ubuntu 20.04 / 22.04
+
+> **RedHat-based systems are no longer officially supported! May work, but does not have to.**
+
 
 ## usage
 
@@ -233,6 +232,7 @@ The `master` Branch is my *Working Horse* includes the "latest, hot shit" and ca
 
 If you want to use something stable, please use a [Tagged Version](https://github.com/bodsch/ansible-php/tags)!
 
+---
 
 ## Author
 
