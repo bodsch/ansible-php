@@ -1,10 +1,6 @@
 ---
 
-php_version: "{{ '7' if ansible_os_family | lower != 'redhat' else '7.3' }}"
-
-# php_custom_packages:
-#   - php-ldap
-#   - php-imap
+php_version: "{{ '7.3' if ansible_os_family | lower == 'debian' else '' }}"
 
 php_fpm_pools:
   - name: worker-01

@@ -1,6 +1,6 @@
 ---
 
-php_version: "{{ '8' if ansible_os_family | lower != 'redhat' else '8.1' }}"
+# php_version: "{{ '8' if ansible_os_family | lower != 'redhat' else '8.1' }}"
 
 # php_custom_packages:
 #   - php-ldap
@@ -12,7 +12,7 @@ php_fpm_pools:
     group: "{{ php_fpm_pool_group }}"
     listen.owner: "{{ php_fpm_pool_user }}"
     listen.group: "{{ php_fpm_pool_group }}"
-    listen: "{{ php_fpm_socket_directory }}/$pool.sock"
+    listen: "{{ php_fpm_socket_directory }}/$poolck"
     # static, dynamic or ondemand
     pm: dynamic
     pm.max_children: 10
@@ -29,7 +29,7 @@ php_modules:
     enabled: true
     priority: 10
     content: |
-      zend_extension=opcache.so
+      zend_extension=opcache
       opcache.enable=1
       opcache.enable_cli=1
       opcache.memory_consumption=128
@@ -44,12 +44,12 @@ php_modules:
     enabled: true
     priority: 20
     content: |
-      extension=pdo_mysql.so
+      extension=pdo_mysql
   - name: apcu
     enabled: false
     priority: 20
     content: |
-      extension=apcu.so
+      extension=apcu
       apc.shm_size=96M
       apc.enable_cli=0
       apc.rfc1867=1
@@ -57,12 +57,23 @@ php_modules:
     enabled: true
     priority: 20
     content: |
-      extension=gd.so
+      extension=gd
   - name: memcached
     enabled: false
     priority: 20
     content: |
-      extension=memcached.so
+      extension=memcached
+  - name: xmlrpc
+    enabled: "{{ 'false' if ansible_os_family | lower == 'archlinux' else 'true' }}"
+    priority: 20
+    content: |
+      extension=xmlrpc
+  - name: sqlite3
+    enabled: true
+    priority: 20
+    content: |
+      extension=sqlite3
+      extension=pdo_sqlite
   - name: pdo_mysql
     enabled: false
     priority: 30
@@ -70,7 +81,11 @@ php_modules:
 php_packages:
   - php-gd
   - php-intl
+  - php-sqlite
 
 # OBSOLETE
 # replaced by `php_packages`
-php_custom_packages: []
+php_custom_packages:
+  - php-gd
+  - php-intl
+  - php-sqlite

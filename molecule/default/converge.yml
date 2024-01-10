@@ -10,3 +10,13 @@
 
   roles:
     - role: ansible-php
+
+
+  pre_tasks:
+    - name: environment
+      ansible.builtin.debug:
+        msg:
+          - "os family            : {{ ansible_distribution }} ({{ ansible_os_family }})"
+          - "distribution version : {{ ansible_distribution_major_version }}"
+          - "ansible version      : {{ ansible_version.full }}"
+          - "python version       : {{ ansible_python.version.major }}.{{ ansible_python.version.minor }}"

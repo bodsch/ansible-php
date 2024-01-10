@@ -1,21 +1,22 @@
 ---
 
-profile: production
-
-strict: true
-verbosity: 0
+# profile: production
+#
+# strict: true
+# verbosity: 0
 
 skip_list:
   - name[casing]
   - name[template]
+  - role-name
   - command-instead-of-module  # Using command rather than module.
 
-offline: true
-
-kinds:
-  # - playbook: "**/examples/*.{yml,yaml}"
-  # - galaxy: "**/folder/galaxy.yml"
-  # - tasks: "**/tasks/*.yml"
-  # - vars: "**/vars/*.yml"
-  # - meta: "**/meta/main.yml"
-  - yaml: "**/*.{yml,yaml}"
+# offline: true
+#
+# kinds:
+#   # - playbook: "**/examples/*.{yml,yaml}"
+#   # - galaxy: "**/folder/galaxy.yml"
+#   # - tasks: "**/tasks/*.yml"
+#   # - vars: "**/vars/*.yml"
+#   # - meta: "**/meta/main.yml"
+#   - yaml: "**/*.{yml,yaml}"

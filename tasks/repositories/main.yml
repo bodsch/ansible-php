@@ -5,11 +5,6 @@
   when:
     - ansible_os_family | lower == 'debian'
 
-- name: redhat repositories
-  ansible.builtin.include_tasks: repositories/redhat.yml
-  when:
-    - ansible_os_family | lower == 'redhat'
-
 - name: update package cache
   become: true
   ansible.builtin.package:

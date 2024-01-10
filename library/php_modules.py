@@ -6,6 +6,7 @@
 
 from __future__ import absolute_import, division, print_function
 import os
+import re
 import hashlib
 from pathlib import Path
 
@@ -65,6 +66,14 @@ class PHPModules(object):
         if self.distribution.lower() in ["redhat", "centos", "oracle", "fedora", "rocky", "almalinux"]:
             conf_d = ""
 
+        extension_directory, err = self.extension_dir()
+
+        if not extension_directory:
+            return dict(
+                failed=True,
+                msg=err
+            )
+
         if isinstance(self.php_modules, list):
             for module in self.php_modules:
                 """
@@ -77,20 +86,25 @@ class PHPModules(object):
                 res = {}
 
                 module_name = module.get("name")
-                module_state = module.get("enabled", False)
+                module_state = self.__strtobool(module.get("enabled", False))
                 module_priority = module.get("priority", 10)
                 module_content = module.get("content", None)
                 module_file_name = os.path.join(self.php_modules_path, f"{module_name}.ini")
                 module_link_names = []
+                module_filenames = []
 
                 for path in self.dest:
                     module_link_names.append(os.path.join(path, conf_d, f"{module_priority}-{module_name}.ini"))
 
-                # self.module.log(msg=f"module_name   : {module_name}")
-                # self.module.log(msg=f"  - state     : {module_state}")
-                # self.module.log(msg=f"  - priority  : {module_priority}")
-                # self.module.log(msg=f"  - file name : {module_file_name}")
-                # self.module.log(msg=f"  - link names : {module_link_names}")
+                for _, _, filenames in os.walk(extension_directory):
+                    module_filenames = sorted(filenames)
+
+                self.module.log(msg=f"module_name     : {module_name}")
+                self.module.log(msg=f"  - state       : {module_state}")
+                self.module.log(msg=f"  - priority    : {module_priority}")
+                self.module.log(msg=f"  - file name   : {module_file_name}")
+                self.module.log(msg=f"  - link names  : {module_link_names}")
+                self.module.log(msg=f"  - module files: {module_filenames}")
 
                 res[module_name] = dict()
 
@@ -146,6 +160,39 @@ class PHPModules(object):
         self.module.log(msg=f"= result {result}")
 
         return result
+
+    def extension_dir(self):
+        """
+        """
+        extension_directory = None
+        error_msg = None
+
+        self.php_binary = self.module.get_bin_path('php', False)
+
+        if self.php_binary:
+
+            args = [
+                self.php_binary,
+                "-i"
+            ]
+            rc, out, err = self.__exec(args, check_rc=False)
+
+            if rc == 0:
+                error_msg = None
+                pattern = re.compile(r".*^extension_dir => (?P<configured>.*) =>.*", re.MULTILINE)
+                extension = re.search(pattern, out)
+
+                if extension:
+                    extension_directory = extension.group('configured')
+            else:
+                error_msg = err
+
+        else:
+            error_msg = "PHP does not appear to be installed in the default paths."
+
+        self.module.log(msg=f"{extension_directory}, {error_msg}")
+
+        return extension_directory, error_msg
 
     def create_link(self, source, destination, force=False):
         """
@@ -305,6 +352,38 @@ class PHPModules(object):
         else:
             return False
 
+    def __strtobool(self, val):
+        """
+            Convert a string representation of truth to true (1) or false (0).
+
+            True values are 'y', 'yes', 't', 'true', 'on', and '1';
+            False values are 'n', 'no', 'f', 'false', 'off', and '0'.
+            raises ValueError if 'val' is anything else.
+        """
+        if isinstance(val, bool):
+            return val
+
+        if isinstance(val, str):
+            val = val.lower()
+            if val in ('y', 'yes', 't', 'true', 'on', '1'):
+                return True
+            elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+                return False
+            else:
+                raise ValueError(f"invalid truth value {val}")
+
+    def __exec(self, commands, check_rc=True):
+        """
+        """
+        rc, out, err = self.module.run_command(commands, check_rc=check_rc)
+
+        # self.module.log(msg=f"  rc : '{rc}'")
+        if rc != 0:
+            self.module.log(msg=f"  out: '{out}'")
+            self.module.log(msg=f"  err: '{err}'")
+
+        return rc, out, err
+
 
 # ===========================================
 # Module execution.
@@ -312,26 +391,30 @@ class PHPModules(object):
 
 
 def main():
-    module = AnsibleModule(
-        argument_spec=dict(
-            php_modules=dict(
-                required=True,
-                type=list
-            ),
-            php_modules_path=dict(
-                required=True,
-                type=str
-            ),
-            dest=dict(
-                required=True,
-                type=list
-            ),
-            force=dict(
-                required=False,
-                type=bool,
-                default=False
-            ),
+    """
+    """
+    specs = dict(
+        php_modules=dict(
+            required=True,
+            type=list
         ),
+        php_modules_path=dict(
+            required=True,
+            type=str
+        ),
+        dest=dict(
+            required=True,
+            type=list
+        ),
+        force=dict(
+            required=False,
+            type=bool,
+            default=False
+        ),
+    )
+
+    module = AnsibleModule(
+        argument_spec=specs,
         supports_check_mode=False,
     )
 
@@ -346,3 +429,9 @@ def main():
 # import module snippets
 if __name__ == '__main__':
     main()
+
+"""
+
+php -r '$all = get_loaded_extensions(); foreach($all as $i) { $ext = new ReflectionExtension($i); $ver = $ext->getVersion(); echo "$i - $ver" . PHP_EOL;}'
+
+"""

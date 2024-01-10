@@ -4,7 +4,7 @@
   when:
     - php_custom_packages | default([]) | count > 0
   block:
-    - name: warn against the use of obsolete variables
+    - name: warn against the use of obsolete variables  # noqa ignore-errors
       ansible.builtin.fail:
         msg: |
           The use of `php_custom_packages` is obsolete!
@@ -37,11 +37,6 @@
     state: "{{ php_packages_state }}"
   when:
     - php_packages | default([]) | count > 0
-
-- name: redhat
-  ansible.builtin.import_tasks: install/redhat.yml
-  when:
-    - ansible_os_family | lower == 'redhat'
 
 - name: create openrc init script
   ansible.builtin.template:

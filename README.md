@@ -52,8 +52,6 @@ Tested on
 
 ```yaml
 # choose your version!
-# debian based can use simple the major version: 7 or 8
-# redhat based should use the major und the minor version: 7.3 or 8.1
 php_version: "8"
 
 php_packages_state: present

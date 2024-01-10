@@ -14,4 +14,10 @@
   when:
     - php_enable_php_fpm
 
+- name: module state
+  ansible.builtin.debug:
+    msg: "{{ _modules_state }}"
+  when:
+    - _modules_state.changed
+
 ...

@@ -22,13 +22,10 @@
         dest: "{{ php_conf_paths }}"
         # force: true
       register: _modules_state
+      notify:
+        - module state
       when:
         - php_modules is defined
 
-    - name: d
-      ansible.builtin.debug:
-        msg: "{{ _modules_state }}"
-      when:
-        - _modules_state.changed
 
 ...

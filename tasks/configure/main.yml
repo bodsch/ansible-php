@@ -6,7 +6,7 @@
     state: directory
     mode: 0755
     follow: true
-  with_flattened:
+  with_community.general.flattened:
     - "{{ php_conf_paths }}"
     - "{{ php_extension_conf_paths }}"
 
