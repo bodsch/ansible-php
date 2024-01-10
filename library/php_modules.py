@@ -91,20 +91,22 @@ class PHPModules(object):
                 module_content = module.get("content", None)
                 module_file_name = os.path.join(self.php_modules_path, f"{module_name}.ini")
                 module_link_names = []
-                module_filenames = []
+                # module_filenames = []
 
                 for path in self.dest:
                     module_link_names.append(os.path.join(path, conf_d, f"{module_priority}-{module_name}.ini"))
 
-                for _, _, filenames in os.walk(extension_directory):
-                    module_filenames = sorted(filenames)
+                # TODO
+                # validate installed modules against whanted extensions
+                # for _, _, filenames in os.walk(extension_directory):
+                #     module_filenames = sorted(filenames)
 
-                self.module.log(msg=f"module_name     : {module_name}")
-                self.module.log(msg=f"  - state       : {module_state}")
-                self.module.log(msg=f"  - priority    : {module_priority}")
-                self.module.log(msg=f"  - file name   : {module_file_name}")
-                self.module.log(msg=f"  - link names  : {module_link_names}")
-                self.module.log(msg=f"  - module files: {module_filenames}")
+                # self.module.log(msg=f"module_name     : {module_name}")
+                # self.module.log(msg=f"  - state       : {module_state}")
+                # self.module.log(msg=f"  - priority    : {module_priority}")
+                # self.module.log(msg=f"  - file name   : {module_file_name}")
+                # self.module.log(msg=f"  - link names  : {module_link_names}")
+                # self.module.log(msg=f"  - module files: {module_filenames}")
 
                 res[module_name] = dict()
 

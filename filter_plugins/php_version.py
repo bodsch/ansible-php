@@ -23,8 +23,8 @@ class FilterModule(object):
     def add_version(self, data, version, os_family):
         """
         """
-        display.v(f"add_version(data, {version}, {os_family})")
-        display.v(f"  - {data}")
+        # display.v(f"add_version(data, {version}, {os_family})")
+        # display.v(f"  - {data}")
 
         php_version = version.get('version', None)
         php_package_version = version.get('package_version', None)
@@ -57,24 +57,24 @@ class FilterModule(object):
         else:
             packages = data.copy()
 
-        display.v(f"  = {packages}")
+        # display.v(f"  = {packages}")
 
         return packages
 
     def verify_version(self, data, version):
         """
         """
-        display.v("verify_version(data, version)")
-        display.v(f"  - data   : {data}")
-        display.v(f"  - version: {version}")
+        # display.v("verify_version(data, version)")
+        # display.v(f"  - data   : {data}")
+        # display.v(f"  - version: {version}")
 
         result = False
 
         php_version = data.get('version', None)
         php_major_version = data.get('major_version', None)
 
-        display.v(f"    php_version        : {php_version}")
-        display.v(f"    php_major_version  : {php_major_version}")
+        # display.v(f"    php_version        : {php_version}")
+        # display.v(f"    php_major_version  : {php_major_version}")
 
         if "." in version:
             if not php_version:
@@ -84,9 +84,9 @@ class FilterModule(object):
         else:
             if not php_major_version:
                 return False
-            display.v(f"    {version} != {php_major_version}")
+            display.vv(f"    {version} != {php_major_version}")
             result = (Version(version) == Version(php_major_version))
 
-        display.v(f"  = {result}")
+        # display.v(f"  = {result}")
 
         return result

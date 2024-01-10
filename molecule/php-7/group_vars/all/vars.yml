@@ -1,6 +1,6 @@
 ---
 
-php_version: "{{ '7.3' if ansible_os_family | lower == 'debian' else '' }}"
+php_version: "{{ '7.4' if ansible_os_family | lower == 'debian' else '' }}"
 
 php_fpm_pools:
   - name: worker-01

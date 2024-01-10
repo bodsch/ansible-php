@@ -44,13 +44,17 @@ class PHPVersion(object):
         error = True
         msg = f"not supported distribution: {self.distribution}."
 
-        self.module.log(msg=f"  distribution : '{self.distribution}'.")
+        if self.distribution.lower() in ["redhat", "centos", "oracle", "fedora", "rocky", "almalinux"]:
+            # error, version, msg = self._search_yum()
+            return dict(
+                failed=error,
+                msg=msg
+            )
+
+        # self.module.log(msg=f"  distribution : '{self.distribution}'.")
 
         if self.distribution.lower() in ["debian", "ubuntu"]:
             error, version, msg = self._search_apt()
-
-        if self.distribution.lower() in ["redhat", "centos", "oracle", "fedora", "rocky", "almalinux"]:
-            error, version, msg = self._search_yum()
 
         if self.distribution.lower() in ["arch", "artix"]:
             self.pacman_bin = self.module.get_bin_path('pacman', True)
@@ -91,23 +95,20 @@ class PHPVersion(object):
 
         pkg = cache['php']
 
-        self.module.log(msg="pkg       : {}".format(pkg))
-        self.module.log(msg="installed : {}".format(pkg.is_installed))
-        self.module.log(msg="shortname : {}".format(pkg.shortname))
-        self.module.log(msg="versions  : {}".format(pkg.versions))
+        # self.module.log(msg="pkg       : {}".format(pkg))
+        # self.module.log(msg="installed : {}".format(pkg.is_installed))
+        # self.module.log(msg="shortname : {}".format(pkg.shortname))
+        # self.module.log(msg="versions  : {}".format(pkg.versions))
 
         if (pkg):
             pattern = re.compile(r'^\d:(?P<version>[0-9.]+)\+.*')
 
             for pkg_version in pkg.versions:
                 _version = pkg_version.version
-                self.module.log(msg=f" - version  : {_version} {type(_version)}")
-
+                # self.module.log(msg=f" - version  : {_version} {type(_version)}")
                 result = re.search(pattern, _version)
                 version = result.group(1)
-
-                self.module.log(msg=f" - version  : {version} {type(version)}")
-
+                # self.module.log(msg=f" - version  : {version}")
                 if version.startswith(self.package_version):
                     break
                 else:
@@ -151,7 +152,7 @@ class PHPVersion(object):
 
         version = ''
 
-        if (rc == 0):
+        if rc == 0:
             versions = []
 
             for line in out.splitlines():
@@ -160,7 +161,7 @@ class PHPVersion(object):
                     result = re.search(pattern, line)
                     versions.append(result.group('version'))
 
-            self.module.log(msg=f"versions      : '{versions}'")
+            # self.module.log(msg=f"versions      : '{versions}'")
 
             if len(versions) == 0:
                 msg = 'nothing found'
