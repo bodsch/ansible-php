@@ -49,12 +49,12 @@
 
 - name: check if {{ php_fpm_pool_conf_path }} exists
   ansible.builtin.stat:
-    path: "{{ php_fpm_pool_conf_path | dirname }}"
+    path: "{{ php_fpm_pool_conf_path }}"
   register: php_fpm_pool_conf_path_dir_stat
 
 - name: ensure the default pool directory exists
   ansible.builtin.file:
-    path: "{{ php_fpm_pool_conf_path | dirname }}"
+    path: "{{ php_fpm_pool_conf_path }}"
     state: directory
     owner: root
     group: root
