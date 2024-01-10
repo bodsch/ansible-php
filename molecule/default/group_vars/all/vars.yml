@@ -1,11 +1,5 @@
 ---
 
-# php_version: "{{ '8' if ansible_os_family | lower != 'redhat' else '8.1' }}"
-
-# php_custom_packages:
-#   - php-ldap
-#   - php-imap
-
 php_fpm_pools:
   - name: worker-01
     user: "{{ php_fpm_pool_user }}"
@@ -69,7 +63,7 @@ php_modules:
     content: |
       extension=xmlrpc
   - name: sqlite3
-    enabled: true
+    enabled: false
     priority: 20
     content: |
       extension=sqlite3
@@ -81,11 +75,8 @@ php_modules:
 php_packages:
   - php-gd
   - php-intl
-  - php-sqlite
+  # - php-sqlite
 
 # OBSOLETE
 # replaced by `php_packages`
-php_custom_packages:
-  - php-gd
-  - php-intl
-  - php-sqlite
+php_custom_packages: []
