@@ -451,6 +451,10 @@ if __name__ == '__main__':
 
 """
 
-php -r '$all = get_loaded_extensions(); foreach($all as $i) { $ext = new ReflectionExtension($i); $ver = $ext->getVersion(); echo "$i - $ver" . PHP_EOL;}'
-
+php -r '$all = get_loaded_extensions();
+    foreach($all as $i) {
+        $ext = new ReflectionExtension($i);
+        $ver = $ext->getVersion();
+        echo "$i - $ver" . PHP_EOL;
+    }'
 """
