@@ -32,7 +32,8 @@ class PHPVersion(object):
         self.module = module
         self.package_version = module.params.get("package_version")
 
-        (self.distribution, self.version, self.codename) = distro.linux_distribution(full_distribution_name=False)
+        (self.distribution, self.version, self.codename) = distro.linux_distribution(
+            full_distribution_name=False)
 
     def run(self):
         result = dict(
@@ -52,6 +53,12 @@ class PHPVersion(object):
             )
 
         # self.module.log(msg=f"  distribution : '{self.distribution}'.")
+
+        if self.distribution.lower() in ["redhat", "centos", "oracle", "fedora", "rocky", "almalinux"]:
+            return dict(
+                failed=True,
+                msg=msg
+            )
 
         if self.distribution.lower() in ["debian", "ubuntu"]:
             error, version, msg = self._search_apt()
@@ -105,7 +112,9 @@ class PHPVersion(object):
 
             for pkg_version in pkg.versions:
                 _version = pkg_version.version
-                # self.module.log(msg=f" - version  : {_version} {type(_version)}")
+                self.module.log(
+                    msg=f" - version  : {_version} {type(_version)}")
+
                 result = re.search(pattern, _version)
                 version = result.group(1)
                 # self.module.log(msg=f" - version  : {version}")
@@ -193,7 +202,8 @@ class PHPVersion(object):
         # match to
         #  extra/php 8.1.2-1
         #  extra/php7 7.4.27-1
-        pattern = re.compile(r'^(?P<repository>extra|world)\/php[0-9 ]+(?P<version>\d\.\d).*-.*', re.MULTILINE)
+        pattern = re.compile(
+            r'^(?P<repository>extra|world)\/php[0-9 ]+(?P<version>\d\.\d).*-.*', re.MULTILINE)
 
         args = []
         args.append("--noconfirm")

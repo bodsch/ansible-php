@@ -46,7 +46,8 @@ class PHPModules(object):
 
         self.php_modules_cache_directory = f"{Path.home()}/.ansible/cache/php"
 
-        (self.distribution, self.version, self.codename) = distro.linux_distribution(full_distribution_name=False)
+        (self.distribution, self.version, self.codename) = distro.linux_distribution(
+            full_distribution_name=False)
 
     def run(self):
         """
@@ -89,12 +90,14 @@ class PHPModules(object):
                 module_state = self.__strtobool(module.get("enabled", False))
                 module_priority = module.get("priority", 10)
                 module_content = module.get("content", None)
-                module_file_name = os.path.join(self.php_modules_path, f"{module_name}.ini")
+                module_file_name = os.path.join(
+                    self.php_modules_path, f"{module_name}.ini")
                 module_link_names = []
                 # module_filenames = []
 
                 for path in self.dest:
-                    module_link_names.append(os.path.join(path, conf_d, f"{module_priority}-{module_name}.ini"))
+                    module_link_names.append(os.path.join(
+                        path, conf_d, f"{module_priority}-{module_name}.ini"))
 
                 # TODO
                 # validate installed modules against whanted extensions
@@ -112,13 +115,15 @@ class PHPModules(object):
 
                 if module_content:
 
-                    w_changed = self._write_module(module_name, module_file_name, module_content)
+                    w_changed = self._write_module(
+                        module_name, module_file_name, module_content)
 
                     if w_changed:
                         module_state_msg = "module sucessful written"
 
                     if module_state:
-                        e_changed, msg = self._enable_module(module_file_name, module_link_names)
+                        e_changed, msg = self._enable_module(
+                            module_file_name, module_link_names)
 
                         if e_changed:
                             self.module.log(msg=f"    - {msg}")
@@ -149,14 +154,16 @@ class PHPModules(object):
 
         # define changed for the running tasks
         # migrate a list of dict into dict
-        combined_d = {key: value for d in result_state for key, value in d.items()}
+        combined_d = {
+            key: value for d in result_state for key, value in d.items()}
         # find all changed and define our variable
-        changed = (len({k: v for k, v in combined_d.items() if v.get('changed')}) > 0)
+        changed = (
+            len({k: v for k, v in combined_d.items() if v.get('changed')}) > 0)
 
         result = dict(
-            changed = changed,
-            failed = False,
-            msg = result_state
+            changed=changed,
+            failed=False,
+            msg=result_state
         )
 
         self.module.log(msg=f"= result {result}")
@@ -213,7 +220,9 @@ class PHPModules(object):
     def _write_module(self, module_name, file_name, data=None):
         """
         """
-        checksum_file = os.path.join(self.php_modules_cache_directory, f"{module_name}.checksum")
+        checksum_file = os.path.join(
+            self.php_modules_cache_directory,
+            f"{module_name}.checksum")
 
         if not data:
             if os.path.exists(file_name):
@@ -223,10 +232,12 @@ class PHPModules(object):
 
             return False
 
-        changed, new_checksum, old_checksum = self.__has_changed(file_name, checksum_file, data)
+        changed, new_checksum, old_checksum = self.__has_changed(
+            file_name, checksum_file, data)
 
         if changed:
-            self.__write_template(data=data, data_file=file_name, checksum=new_checksum, checksum_file=checksum_file)
+            self.__write_template(data=data, data_file=file_name,
+                                  checksum=new_checksum, checksum_file=checksum_file)
 
         return changed
 
@@ -241,7 +252,8 @@ class PHPModules(object):
 
             if os.path.islink(link) and os.readlink(link) == module_file_name:
                 # self.module.log(msg="link exists and is valid")
-                result[link].update({"msg": "link exists and is valid", "changed": False})
+                result[link].update(
+                    {"msg": "link exists and is valid", "changed": False})
                 pass
             else:
                 if not os.path.islink(link):
@@ -253,11 +265,13 @@ class PHPModules(object):
                     else:
                         self.create_link(module_file_name, link)
 
-                result[link].update({"msg": f"link {link} created", "changed": True})
+                result[link].update(
+                    {"msg": f"link {link} created", "changed": True})
 
                 changed = True
 
-        changed = (len({k: v for k, v in result.items() if v.get('changed')}) > 0)
+        changed = (
+            len({k: v for k, v in result.items() if v.get('changed')}) > 0)
 
         return changed, result
 
@@ -271,11 +285,14 @@ class PHPModules(object):
             result[link] = dict()
             if os.path.exists(link):
                 os.remove(link)
-                result[link].update({"msg": f"link {link} removed", "changed": True})
+                result[link].update(
+                    {"msg": f"link {link} removed", "changed": True})
             else:
-                result[link].update({"msg": f"no link for {link} found", "changed": False})
+                result[link].update(
+                    {"msg": f"no link for {link} found", "changed": False})
 
-        changed = (len({k: v for k, v in result.items() if v.get('changed')}) > 0)
+        changed = (
+            len({k: v for k, v in result.items() if v.get('changed')}) > 0)
 
         return changed
 

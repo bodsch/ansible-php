@@ -4,7 +4,7 @@
 # E251 unexpected spaces around keyword / parameter equals
 # W605 invalid escape sequence
 
-ignore = E221,E251,W605
+ignore = W605
 
 exclude =
   # No need to traverse our git directory

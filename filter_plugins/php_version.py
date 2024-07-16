@@ -79,12 +79,12 @@ class FilterModule(object):
         if "." in version:
             if not php_version:
                 return False
-            display.vv(f"    {version} != {php_version}")
+            # display.vv(f"    {version} != {php_version}")
             result = (Version(version) == Version(php_version))
         else:
             if not php_major_version:
                 return False
-            display.vv(f"    {version} != {php_major_version}")
+            # display.v(f"    {version} != {php_major_version}")
             result = (Version(version) == Version(php_major_version))
 
         # display.v(f"  = {result}")

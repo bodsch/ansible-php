@@ -14,12 +14,12 @@ ArchLinux has removed the PHP 7 packages from their repository!
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-php/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-php)][issues]
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-php)][releases]
-[![Ansible Quality Score](https://img.shields.io/ansible/quality/50067?label=role%20quality)][quality]
+[![Ansible Downloads](https://img.shields.io/ansible/role/d/bodsch/php?logo=ansible)][galaxy]
 
 [ci]: https://github.com/bodsch/ansible-php/actions
 [issues]: https://github.com/bodsch/ansible-php/issues?q=is%3Aopen+is%3Aissue
 [releases]: https://github.com/bodsch/ansible-php/releases
-[quality]: https://galaxy.ansible.com/bodsch/php
+[galaxy]: https://galaxy.ansible.com/ui/standalone/roles/bodsch/php
 
 ## Requirements & Dependencies
 
@@ -42,8 +42,8 @@ Tested on
 
 * ArchLinux (**only PHP 8!**)
 * Debian based
-    - Debian 10 / 11 / 12
-    - Ubuntu 20.04 / 22.04
+    - Debian 12
+    - Ubuntu 22.04
 
 > **RedHat-based systems are no longer officially supported! May work, but does not have to.**
 

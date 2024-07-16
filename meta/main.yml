@@ -2,7 +2,7 @@
 
 galaxy_info:
   role_name: php
-  # namespace: bodsch
+  namespace: bodsch
 
   author: Bodo Schulz
   description: ansible role to install and configure php-fpm

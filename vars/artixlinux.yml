@@ -3,7 +3,7 @@
 php_defaults_packages:
   - php{{ php_major_version }}
   - php{{ php_major_version }}-fpm
-  - php{{ php_major_version }}-openrc
+  - php{{ php_major_version }}-fpm-openrc
 
   # - php{{ php_major_version }}-gd
   # - php{{ php_major_version }}-imap
