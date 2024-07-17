@@ -1,6 +1,6 @@
 ---
 
-- name: include OS specific configuration
+- name: include OS specific configuration ({{ ansible_distribution }} ({{ ansible_os_family }}) {{ ansible_distribution_major_version }})
   ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
@@ -11,6 +11,8 @@
         - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
         # eg. archlinux-systemd / archlinux-openrc
         - "{{ ansible_distribution | lower }}-{{ ansible_service_mgr | lower }}.yml"
+        # eg. artixlinux
+        - "{{ ansible_distribution | lower | replace(' ', '') }}.yml"
         # eg. debian / ubuntu / centos / oraclelinux
         - "{{ ansible_distribution | lower }}.yml"
         # eg. redhat / debian / archlinux

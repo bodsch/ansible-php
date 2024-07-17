@@ -30,7 +30,8 @@
   ansible.builtin.set_fact:
     php_major_version: ""
   when:
-    - ansible_distribution | lower == 'archlinux'
+    - ansible_distribution | lower == 'archlinux' or
+      ansible_distribution | lower | replace(' ', '') == 'artixlinux'
     - php_major_version | int == 8
 
 - name: do facts module to get latest information
@@ -47,6 +48,8 @@
         - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
         # eg. archlinux-systemd / archlinux-openrc
         - "{{ ansible_distribution | lower }}-{{ ansible_service_mgr | lower }}.yml"
+        # eg. artixlinux
+        - "{{ ansible_distribution | lower | replace(' ', '') }}.yml"
         # eg. debian / ubuntu / centos / oraclelinux
         - "{{ ansible_distribution | lower }}.yml"
         # eg. redhat / debian / archlinux

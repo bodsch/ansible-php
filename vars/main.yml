@@ -15,26 +15,26 @@ php_fpm_defaults_global:
   pid: "{{ php_fpm_socket_directory }}/php-fpm.pid"
   error_log: "{{ php_fpm_log_directory }}/error.log"
   syslog:
-    facility: ""  # daemon
-    ident: ""     # php-fpm
+    facility: ""                                  # daemon
+    ident: ""                                     # php-fpm
   log:
     level: notice
-    limit: ""         # 4096
-    buffering: false  # no
+    limit: ""                                     # 4096
+    buffering: false                              # no
   emergency_restart:
-    threshold: ""     # 0
-    interval: ""      # 0
+    threshold: ""                                 # 0
+    interval: ""                                  # 0
   process:
-    control_timeout: ""  # 0
-    max: ""  # 128
-    priority: ""  # -19
-  daemonize: ""  # yes
+    control_timeout: ""                           # 0
+    max: ""                                       # 128
+    priority: ""                                  # -19
+  daemonize: ""                                   # yes
   rlimit:
-    files: ""  # 1024
-    core: ""  # 0
+    files: ""                                     # 1024
+    core: ""                                      # 0
   events:
-    mechanism: ""  # epoll
-  systemd_interval: ""  # 10
+    mechanism: ""                                 # epoll
+  systemd_interval: ""                            # 10
 
 php_fpm_defaults_ini:
 
@@ -77,25 +77,25 @@ php_fpm_defaults_ini:
     session.hash_bits_per_character: 5
 
   MSSQL:
-    allow_persistent: ""      # On
-    max_persistent: ""        # -1
-    max_links: ""             # -1
-    min_error_severity: ""    # 10
-    min_message_severity: ""  # 10
-    compatability_mode: ""    # Off
-    secure_connection: ""     # Off
+    allow_persistent: ""                          # On
+    max_persistent: ""                            # -1
+    max_links: ""                                 # -1
+    min_error_severity: ""                        # 10
+    min_message_severity: ""                      # 10
+    compatability_mode: ""                        # Off
+    secure_connection: ""                         # Off
   Tidy:
-    default_config: ""      # /usr/local/lib/php/default.tcfg
-    clean_output: ""        # Off
+    default_config: ""                            # /usr/local/lib/php/default.tcfg
+    clean_output: ""                              # Off
   soap:
-    wsdl_cache_enabled: ""  # 1
-    wsdl_cache_dir: ""      # "/tmp"
-    wsdl_cache_ttl: ""      # 86400
-    wsdl_cache_limit: ""    # 5
+    wsdl_cache_enabled: ""                        # 1
+    wsdl_cache_dir: ""                            # "/tmp"
+    wsdl_cache_ttl: ""                            # 86400
+    wsdl_cache_limit: ""                          # 5
   sysvshm:
-    init_mem: ""    # 10000
+    init_mem: ""                                  # 10000
   ldap:
-    max_links: ""   # -1
+    max_links: ""                                 # -1
 
 php_fpm_daemon: ""
 

@@ -3,14 +3,7 @@
 php_defaults_packages:
   - php{{ php_major_version }}
   - php{{ php_major_version }}-fpm
-  - php{{ php_major_version }}-openrc
-
-  # - php{{ php_major_version }}-gd
-  # - php{{ php_major_version }}-imap
-  # - php{{ php_major_version }}-intl
-  # - php{{ php_major_version }}-memcached
-  # - php{{ php_major_version }}-apcu
-  # - php{{ php_major_version }}-igbinary
+  - php{{ php_major_version }}-fpm-openrc
 
 php_conf_paths:
   - /etc/php{{ php_major_version }}

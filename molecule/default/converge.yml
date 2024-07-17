@@ -11,7 +11,6 @@
   roles:
     - role: ansible-php
 
-
   pre_tasks:
     - name: environment
       ansible.builtin.debug:

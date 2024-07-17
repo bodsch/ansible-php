@@ -116,19 +116,18 @@ def test_installed_package(host, get_vars):
 
     print(distribution)
 
-    if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
-        package_version = local_facts(host).get("version").get("package")
-        package = f"php{package_version}-php-fpm"
+    if not distribution == "artix":
+        if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
+            package_version = local_facts(host).get("version").get("package")
+            package = f"php{package_version}-php-fpm"
 
-    if distribution == 'arch':
-        package_version = local_facts(host).get("version").get("major")
-        if package_version == 7:
-            package = f"php{package_version}-fpm"
-        else:
-            package = "php-fpm"
+        if distribution in ['arch', 'artix']:
+            package_version = local_facts(host).get("version").get("major")
+            if package_version == 7:
+                package = f"php{package_version}-fpm"
 
-    p = host.package(package)
-    assert p.is_installed
+        p = host.package(package)
+        assert p.is_installed
 
 
 def test_installed_custom_package(host, get_vars):
@@ -136,20 +135,20 @@ def test_installed_custom_package(host, get_vars):
         custom packages
     """
     custom_packages = get_vars.get("php_packages")
+    distribution = host.system_info.distribution
 
-    if (custom_packages):
-        distribution = host.system_info.distribution
+    if not distribution == "artix":
+        if custom_packages:
+            for pkg in custom_packages:
+                package = pkg
 
-        for pkg in custom_packages:
-            package = pkg
+                if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
+                    package_version = local_facts(
+                        host).get("version").get("package")
+                    package = f"php{package_version}-{pkg}"
 
-            if distribution in ['redhat', 'ol', 'centos', 'rocky', 'almalinux']:
-                package_version = local_facts(
-                    host).get("version").get("package")
-                package = f"php{package_version}-{pkg}"
-
-            p = host.package(package)
-            assert p.is_installed
+                p = host.package(package)
+                assert p.is_installed
 
 
 def test_directories(host, get_vars):
@@ -166,7 +165,7 @@ def test_directories(host, get_vars):
         f"/etc/php/{package_version}/fpm"
     ]
 
-    if distribution == 'arch':
+    if distribution in ['arch', 'artix']:
         package_version = local_facts(host).get("version").get("major")
 
         if package_version == 7:
@@ -241,3 +240,4 @@ def test_fpm_pools(host, get_vars):
 
         assert host.file(socket_name).exists
         assert host.socket(f"unix://{socket_name}").is_listening
+
