@@ -69,7 +69,7 @@ jobs:
   ubuntu:
     name: "${{ matrix.scenario }} (ansible ${{ matrix.ansible-version }}, python ${{ matrix.python_version }})"
     runs-on: ubuntu-22.04
-    neds:
+    needs:
       - debian
     strategy:
       fail-fast: false
