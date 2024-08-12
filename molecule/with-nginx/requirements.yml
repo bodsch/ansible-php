@@ -1,7 +1,0 @@
----
-
-- name: nginx
-  src: https://github.com/geerlingguy/ansible-role-nginx.git
-  version: 3.1.0
-
-...
