@@ -3,6 +3,13 @@
 
 Ansible role to install fpm-php on various systems.
 
+---
+
+> Further development of this Ansible role has been moved to Collection [bodsch.php](https://github.com/bodsch/ansible-collection-php).
+> **This repository will therefore no longer be actively maintained.**
+
+---
+
 Only inspired by [geerlingguy](https://github.com/geerlingguy/ansible-role-php)
 
 Detect available PHP Version based on `php_version` Variable.
